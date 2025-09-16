@@ -1,21 +1,22 @@
-import { NextRequest } from "next/server";
+// app/api/alloc/route.ts
+import { NextRequest, NextResponse } from "next/server";
+
+type AllocResp =
+  | { ok: true; amount: string }
+  | { ok: false; error: string };
 
 export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const user = searchParams.get("user");
-    const claim = process.env.NEXT_PUBLIC_CLAIM_ADDRESS;
+  const { searchParams } = new URL(req.url);
+  const user = searchParams.get("user");
 
-    if (!user) {
-      return Response.json({ ok: false, error: "user param required" }, { status: 400 });
-    }
-    if (!claim) {
-      return Response.json({ ok: false, error: "CLAIM_ADDRESS not set" }, { status: 500 });
-    }
-
-    // TODO: тут підключимо runMethod(get_alloc) після того, як надаси адресу/опкоди ClaimManager.
-    return Response.json({ ok: true, amount: "0" });
-  } catch (e: any) {
-    return Response.json({ ok: false, error: e?.message || "unknown" }, { status: 500 });
+  if (!user) {
+    return NextResponse.json<AllocResp>(
+      { ok: false, error: "Missing 'user' query param" },
+      { status: 400 }
+    );
   }
+
+  // TODO: під’єднати реальний бек/контракт.
+  // Поки що повертаємо 0 як заглушку:
+  return NextResponse.json<AllocResp>({ ok: true, amount: "0" });
 }

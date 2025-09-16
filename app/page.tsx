@@ -10,7 +10,6 @@ type AllocResp = { ok: true; amount: string } | { ok: false; error: string };
 
 // ===== ENV =====
 const SALE_ADDRESS = process.env.NEXT_PUBLIC_SALE_ADDRESS || "";     // EQ... (bounceable)
-const CLAIM_ADDRESS = process.env.NEXT_PUBLIC_CLAIM_ADDRESS || "";   // reserved for future ClaimManager
 const DECIMALS = Number(process.env.NEXT_PUBLIC_MAGT_DECIMALS || 9);
 
 // ===== Utils =====
