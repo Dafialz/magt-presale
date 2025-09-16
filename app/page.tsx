@@ -4,18 +4,19 @@
 import Image from "next/image";
 import { TonConnectButton, useTonConnectUI } from "@tonconnect/ui-react";
 import React, { useEffect, useMemo, useState } from "react";
+import { beginCell } from "@ton/core"; // ⬅️ додали для формування payload
 
 // ===== Types =====
 type AllocResp = { ok: true; amount: string } | { ok: false; error: string };
 
 // ===== ENV =====
-const SALE_ADDRESS = process.env.NEXT_PUBLIC_SALE_ADDRESS || "";     // EQ... (bounceable)
+const SALE_ADDRESS = process.env.NEXT_PUBLIC_SALE_ADDRESS || ""; // EQ... (bounceable)
 const DECIMALS = Number(process.env.NEXT_PUBLIC_MAGT_DECIMALS || 9);
 
 // ===== Utils =====
 function formatAmount(nano: string, decimals: number) {
   const big = BigInt(nano || "0");
-  const base = BigInt(10) ** BigInt(decimals); // без BigInt-літералів
+  const base = BigInt(10) ** BigInt(decimals);
   const int = big / base;
   const frac = (big % base).toString().padStart(decimals, "0").replace(/0+$/, "");
   return frac.length ? `${int}.${frac}` : `${int}`;
@@ -30,6 +31,29 @@ function toNanoStr(tonStr: string): string {
     BigInt(intPart) * (BigInt(10) ** BigInt(9)) +
     BigInt(fracPadded || "0")
   ).toString();
+}
+
+// ---- base64 helper для браузера (без Buffer) ----
+function bytesToBase64(arr: Uint8Array): string {
+  if (typeof window === "undefined") {
+    // SSR safety (на сервері Buffer є)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return Buffer.from(arr).toString("base64");
+  }
+  let bin = "";
+  arr.forEach((b) => (bin += String.fromCharCode(b)));
+  return btoa(bin);
+}
+
+// ---- OP_BUY payload для контракту сейлу ----
+const OP_BUY = 0xb0a1cafe as const;
+function buildBuyBodyBase64(): string {
+  const cell = beginCell()
+    .storeUint(OP_BUY, 32) // opcode
+    .storeBit(false)       // без реферала
+    .endCell();
+  return bytesToBase64(cell.toBoc({ idx: false }));
 }
 
 // ===== Page =====
@@ -72,7 +96,13 @@ export default function Page() {
     try {
       await tonConnectUI.sendTransaction({
         validUntil: Math.floor(Date.now() / 1000) + 300,
-        messages: [{ address: SALE_ADDRESS, amount: toNanoStr(amountTON) }],
+        messages: [
+          {
+            address: SALE_ADDRESS,
+            amount: toNanoStr(amountTON),
+            payload: buildBuyBodyBase64(), // ⬅️ головне: OP_BUY у payload
+          },
+        ],
       });
       alert("Транзакцію надіслано. Перевір історію у гаманці/експлорері.");
     } catch {
