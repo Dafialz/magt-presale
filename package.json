@@ -6,22 +6,42 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "tact:build": "tact -o contracts contracts/MAGTSale.tact",
+    "tact:watch": "tact -w -o contracts contracts/MAGTSale.tact",
+    "deploy:sale": "ts-node -P tsconfig.scripts.json scripts/deploy-sale.ts",
+    "sale:jw": "ts-node -P tsconfig.scripts.json scripts/get-sale-jw.ts",
+    "jetton:wallet": "ts-node -P tsconfig.scripts.json scripts/get-jetton-wallet.ts",
+    "jetton:balance": "ts-node -P tsconfig.scripts.json scripts/get-jetton-balance.ts",
+    "claim:check": "ts-node -P tsconfig.scripts.json scripts/check-claim.ts",
+    "buy:test": "ts-node -P tsconfig.scripts.json scripts/buy-test.ts 0.2",
+    "mint:sale": "ts-node -P tsconfig.scripts.json scripts/mint-to-sale.ts",
+    "minter:admin": "ts-node -P tsconfig.scripts.json scripts/minter-admin.ts",
+    "admin:probe": "ts-node -P tsconfig.scripts.json scripts/probe-admin.ts",
+    "admin:which": "ts-node -P tsconfig.scripts.json scripts/wallet-id.ts",
+     "minter:change-admin": "ts-node -P tsconfig.scripts.json scripts/minter-change-admin.ts"
   },
   "dependencies": {
+    "@ton/core": "^0.61.0",
+    "@ton/crypto": "^3.3.0",
+    "@ton/ton": "^15.3.1",
+    "@tonconnect/ui-react": "^2.3.0",
+    "dotenv": "^17.2.2",
+    "next": "15.5.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.3"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tact-lang/compiler": "^1.6.13",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   }
 }
