@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: MAGTSale
-BoC Size: 2014 bytes
+BoC Size: 2289 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 17
@@ -129,10 +129,10 @@ Argument: addr
 * 7126: NO_TON
 * 17803: LEVEL_OOB
 * 19276: LEVEL_MISSING
-* 30094: BAD_OP
 * 30229: LEVEL_NULL
 * 37401: ZERO_OUTPUT
 * 43904: LOW_PAYMENT
+* 47989: NOT_OWNER
 * 53246: LEVEL_NULL_2
 
 ## Trait inheritance diagram

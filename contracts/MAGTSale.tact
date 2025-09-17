@@ -24,17 +24,18 @@ struct RefQuery {
 
 // -------------------- Контракт --------------------
 contract MAGTSale with Deployable {
-    fun OP_JETTON_TRANSFER(): Int { return 0x0f8a7ea5; } // jetton transfer
+    fun OP_JETTON_TRANSFER(): Int { return 0x0f8a7ea5; } // jetton transfer (Jetton v1/v2)
     fun OP_BUY(): Int { return 0xb0a1cafe; }            // наш op для покупки
+    fun OP_WITHDRAW(): Int { return 0x7777; }           // адмін-вивід TON
 
-    // Мінімальний буфер TON, який залишаємо на контракті (на сервісні витрати)
-    fun GAS_BUFFER_TON(): Int { return ton("0.05"); }
+    // Мінімальний буфер TON на контракті (сервісні витрати)
+    fun GAS_BUFFER_TON():   Int { return ton("0.01"); }
 
-    // Константи газу для переказу MAGT
-    // Скільки TON форвардимо на JW покупця (щоб він зміг деплоїтись/обробитись)
+    // Газ на видачу MAGT
+    // Скільки TON форвардимо одержувачу (на деплой/нотіф JW)
     fun FWD_TO_RECIPIENT(): Int { return ton("0.03"); }
-    // Скільки TON платимо на виклик SALE_JW (щоб він зміг переслати далі)
-    fun CALL_VALUE(): Int { return ton("0.05"); }
+    // Скільки TON кладемо на виклик SALE_JW (щоб він зміг відправити далі)
+    fun CALL_VALUE():       Int { return ton("0.10"); } // піднято для стабільної відправки JW
 
     owner: Address;
     magtMinter: Address;
@@ -95,24 +96,41 @@ contract MAGTSale with Deployable {
         }
     }
 
-    // -------------------- Внутрішній вхід: buy --------------------
-    // Очікуємо internal message з опкодом OP_BUY у body
-    // або порожній body (теж buy): cell [op:uint32, maybe_referrer:Maybe<address>] | empty
+    // -------------------- Внутрішній вхід --------------------
     receive(msg: Slice) {
+        let sender: Address = context().sender;
+
+        // --- 1) Адмін-вивід TON: [OP_WITHDRAW:uint32, amount:coins] ---
+        if (msg.bits() >= 32) {
+            let op_pre = msg.preloadUint(32);
+            if (op_pre == self.OP_WITHDRAW()) {
+                let _ = msg.loadUint(32);
+                let amount: Int = msg.loadCoins();
+                require(sender == self.owner, "NOT_OWNER");
+                self.send_raw_ton(self.owner, amount);
+                return;
+            }
+        }
+
+        // --- 2) Покупка (OP_BUY або порожній body) ---
+        let cs: Slice = msg;
+        if (cs.bits() != 0) {
+            if (cs.bits() < 32) {
+                // незрозумілий payload — ігнор
+                return;
+            }
+            let op_read: Int = cs.loadUint(32);
+            if (op_read != self.OP_BUY()) {
+                // НЕ наша операція (наприклад, нотифікація від JW) — тихо ігноруємо
+                return;
+            }
+        }
+
+        let buyer: Address = sender;
         let tons: Int = context().value;
         require(tons > 0, "NO_TON");
 
-        // парсимо body; якщо порожній — вважаємо buy без реферала
-        let cs: Slice = msg;
-        let buyer: Address = context().sender;
-
-        // якщо в body є 32 біти — читаємо та перевіряємо op; якщо ні — приймаємо за OP_BUY
-        if (cs.bits() >= 32) {
-            let op_read: Int = cs.loadUint(32);
-            require(op_read == self.OP_BUY(), "BAD_OP");
-        }
-
-        // дістаємо можливого реферала (optional) і фіксуємо його один раз
+        // опційний реферал (тільки для покупки)
         if (cs.bits() >= 1) {
             let has_ref: Bool = cs.loadBit();
             if (has_ref && cs.bits() >= 267) {
@@ -123,14 +141,14 @@ contract MAGTSale with Deployable {
             }
         }
 
-        // Перевірка, що платежу вистачає на виклики JW (покупець + опц. реферал) та буфер
+        // Мінімум для покриття викликів JW (покупець + опц. реферал) та буфер
         let willSendRef: Bool = self.refOf.exists(buyer) && self.refPoolLeftHuman > 0;
         let jwCalls: Int = 1 + (willSendRef ? 1 : 0);
         let needForJW: Int = jwCalls * self.CALL_VALUE();
         let needMin: Int = self.GAS_BUFFER_TON() + needForJW;
         require(tons >= needMin, "LOW_PAYMENT");
 
-        // Скільки MAGT купити з урахуванням рівнів
+        // Розрахунок кількості MAGT з урахуванням рівнів
         let paymentNano: Int = tons;
         let toBuyHuman: Int = self.calc_human_tokens_from_ton(paymentNano);
         require(toBuyHuman > 0, "ZERO_OUTPUT");
@@ -255,23 +273,29 @@ contract MAGTSale with Deployable {
         send(SendParameters{ to: to, value: amountNano, bounce: false });
     }
 
-    // Переказ MAGT із SALE_JW: response_destination → ПОКУПЕЦЬ
+    // Переказ MAGT із SALE_JW: правильне тіло Jetton Transfer
+    // amountRaw: uint128 токенів (з урахуванням 10^decimals)
+    // destination: власник-покупець (НЕ JW!)
     fun send_jetton_transfer(jw: Address, amountRaw: Int, destination: Address) {
+        // ✅ forward_payload = Right ^empty (багато JW це вимагають)
+        // ✅ response_destination = SALE (для нотифікацій)
+        let empty = beginCell().endCell();
+
         let b = beginCell()
-            .storeUint(self.OP_JETTON_TRANSFER(), 32)
-            .storeUint(0, 64)                    // query_id
-            .storeUint(amountRaw, 128)
-            .storeAddress(destination)           // recipient
-            .storeAddress(destination)           // ✅ response_destination = покупець
-            .storeMaybeRef(null)                 // custom_payload = null
-            .storeCoins(self.FWD_TO_RECIPIENT()) // forward_ton_amount
-            .storeBit(false);                    // forward_payload: empty (Either left)
+            .storeUint(self.OP_JETTON_TRANSFER(), 32)  // opcode
+            .storeUint(0, 64)                          // query_id
+            .storeUint(amountRaw, 128)                 // amount (uint128)
+            .storeAddress(destination)                 // recipient owner
+            .storeAddress(myAddress())                 // response_destination = SALE
+            .storeMaybeRef(null)                       // custom_payload = null
+            .storeCoins(self.FWD_TO_RECIPIENT())       // forward_ton_amount
+            .storeBit(true).storeRef(empty);           // forward_payload: right ^empty
 
         send(SendParameters{
-            to: jw,                              // SALE_JW
-            value: self.CALL_VALUE(),            // вистачає на виконання + форвард
+            to: jw,                                    // SALE_JW
+            value: self.CALL_VALUE(),                  // достатньо на виконання + форвард
             bounce: true,
-            mode: 1,                             // pay gas separately (із балансу контракту)
+            mode: 1,                                   // PAY_GAS_SEPARATELY
             body: b.endCell()
         });
     }

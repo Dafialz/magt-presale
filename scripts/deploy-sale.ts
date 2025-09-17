@@ -11,7 +11,7 @@ import {
   Dictionary,
   contractAddress,
   toNano,
-  SendMode,            // ⬅️ додано
+  SendMode,
 } from "@ton/core";
 import { TonClient, WalletContractV5R1, internal } from "@ton/ton";
 import { mnemonicToPrivateKey } from "@ton/crypto";
@@ -146,6 +146,73 @@ function loadBinding(): { MAGTSale: any } {
   return mod;
 }
 
+/* ===== helpers для стабілізації SALE/JW ===== */
+async function getWalletForOwner(minter: Address, owner: Address) {
+  const r = await client.runMethod(minter, "get_wallet_address", [
+    { type: "slice", cell: beginCell().storeAddress(owner).endCell() },
+  ]);
+  return r.stack.readAddress();
+}
+
+async function buildStableSaleInit(args: {
+  MAGTSale: any;
+  owner: Address;
+  minter: Address;
+  magtDecimals: bigint;
+  levelsDict: Dictionary<bigint, { tokens: bigint; price: bigint }>;
+  startLevel: bigint;
+  startRemaining: bigint;
+  refPoolHuman: bigint;
+}) {
+  const { MAGTSale, owner, minter, magtDecimals, levelsDict, startLevel, startRemaining, refPoolHuman } = args;
+
+  // placeholder JW (будь-який валідний адрес)
+  let saleJW = Address.parse("EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c");
+  let prevSale: Address | null = null;
+  let prevJW: Address | null = null;
+
+  for (let i = 0; i < 6; i++) {
+    const init = await MAGTSale.init(
+      owner,
+      minter,
+      saleJW,
+      magtDecimals,
+      levelsDict,
+      startLevel,
+      startRemaining,
+      refPoolHuman
+    );
+    const sale = contractAddress(0, init);
+    const jw = await getWalletForOwner(minter, sale);
+
+    console.log(`[stabilize #${i + 1}] SALE: ${sale.toString()} | JW: ${jw.toString()}`);
+
+    // стабілізація: коли новий jw збігається з тим, що підставили в цю ітерацію
+    if (prevSale && prevJW && sale.equals(prevSale) && jw.equals(prevJW)) {
+      return { init, sale, saleJW: jw };
+    }
+
+    // готуємось до наступної ітерації
+    prevSale = sale;
+    prevJW = jw;
+    saleJW = jw;
+  }
+
+  // повертаємо останній варіант (повинен вже збігатися)
+  const finalInit = await args.MAGTSale.init(
+    owner,
+    minter,
+    saleJW,
+    magtDecimals,
+    levelsDict,
+    startLevel,
+    startRemaining,
+    refPoolHuman
+  );
+  const finalSale = contractAddress(0, finalInit);
+  return { init: finalInit, sale: finalSale, saleJW };
+}
+
 /* ===================== MAIN ===================== */
 async function main() {
   // 0) Підтягнемо Tact binding (де б він не лежав)
@@ -161,7 +228,7 @@ async function main() {
   console.log("Deployer wallet (EQ, bounceable):", fmt(walletContract.address, true));
   console.log("Deployer wallet (UQ, NON-bounceable – для першого поповнення):", fmt(walletContract.address, false));
 
-  // 1.1 Перевірка балансу перед деплоєм (щоб не ловити 500 на sendBoc)
+  // 1.1 Перевірка балансу
   const deployerBalance = await client.getBalance(walletContract.address);
   if (deployerBalance === 0n) {
     throw new Error(
@@ -178,71 +245,45 @@ async function main() {
   const refPoolHuman = 25_000_000n; // як у ТЗ
   const levelsDict = buildLevelsDict();
 
-  // Логи власника
   console.log("Owner from .env (EQ):", fmt(owner, true));
   console.log("Owner from .env (UQ):", fmt(owner, false));
 
-  // 3) Тимчасовий saleJW (placeholder) -> прогноз адреси SALE
-  const placeholderJW = Address.parse("EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c");
-  const initTemp = await MAGTSale.init(
+  // 3) СТАБІЛІЗАЦІЯ адрес SALE і SALE_JW
+  const { init, sale, saleJW } = await buildStableSaleInit({
+    MAGTSale,
     owner,
     minter,
-    placeholderJW,
-    MAGT_DECIMALS,
+    magtDecimals: MAGT_DECIMALS,
     levelsDict,
     startLevel,
     startRemaining,
-    refPoolHuman
-  );
-  const saleAddrTemp = contractAddress(0, initTemp);
-  console.log("Predicted SALE address (temp, EQ):", fmt(saleAddrTemp, true));
-  console.log("Predicted SALE address (temp, UQ):", fmt(saleAddrTemp, false));
+    refPoolHuman,
+  });
 
-  // 4) Отримуємо реальний JettonWallet SALE для MAGT
-  const res = await client.runMethod(minter, "get_wallet_address", [
-    { type: "slice", cell: beginCell().storeAddress(saleAddrTemp).endCell() },
-  ]);
-  const saleJW = res.stack.readAddress();
-  console.log("Predicted SALE JettonWallet (EQ):", fmt(saleJW, true));
-  console.log("Predicted SALE JettonWallet (UQ):", fmt(saleJW, false));
-
-  // 5) Фінальний init із коректним saleJW
-  const init = await MAGTSale.init(
-    owner,
-    minter,
-    saleJW,
-    MAGT_DECIMALS,
-    levelsDict,
-    startLevel,
-    startRemaining,
-    refPoolHuman
-  );
-  const saleAddr = contractAddress(0, init);
-  console.log("SALE_ADDRESS (EQ):", fmt(saleAddr, true));
-  console.log("SALE_ADDRESS (UQ – використовуй для поповнення TON):", fmt(saleAddr, false));
+  console.log("SALE (EQ):", fmt(sale, true));
+  console.log("SALE (UQ – поповнювати TON):", fmt(sale, false));
   console.log("SALE_JW (EQ):", fmt(saleJW, true));
-  console.log("SALE_JW (UQ – для MAGT jetton):", fmt(saleJW, false));
+  console.log("SALE_JW (UQ – MAGT jetton):", fmt(saleJW, false));
 
-  // 5.1 Якщо вже задеплоєно – не шлемо ще раз deploy
-  const alreadyDeployed = await safeIsDeployed(saleAddr);
-  if (alreadyDeployed) {
-    const bal = await client.getBalance(saleAddr);
+  // 4) Якщо вже задеплоєно – не шлемо ще раз
+  if (await safeIsDeployed(sale)) {
+    const bal = await client.getBalance(sale);
     console.log("⛳ SALE вже активний. Баланс TON (nanoTON):", bal.toString());
     console.log("✅ Нічого не відправляю. Далі: поповни SALE_JW MAGT і TON на SALE за потреби.");
     return;
   }
 
-  // 6) Відправляємо deploy message
+  // 5) Deploy
   const seqno = await walletContract.getSeqno();
   await walletContract.sendTransfer({
     secretKey: keyPair.secretKey,
     seqno,
-    sendMode: SendMode.PAY_GAS_SEPARATELY,   // ⬅️ ОБОВʼЯЗКОВО для V5R1
+    sendMode: SendMode.PAY_GAS_SEPARATELY,
     messages: [
       internal({
-        to: saleAddr,
+        to: sale,
         value: toNano("0.2"),
-        init, // тут і code, і data з binding
+        init,
         body: new Cell(),
       }),
     ],

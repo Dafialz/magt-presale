@@ -25,6 +25,7 @@ PROGRAM{
   DECLPROC $MAGTSale$_contract_store
   DECLPROC $MAGTSale$_fun_OP_JETTON_TRANSFER
   DECLPROC $MAGTSale$_fun_OP_BUY
+  DECLPROC $MAGTSale$_fun_OP_WITHDRAW
   DECLPROC $MAGTSale$_fun_GAS_BUFFER_TON
   DECLPROC $MAGTSale$_fun_FWD_TO_RECIPIENT
   DECLPROC $MAGTSale$_fun_CALL_VALUE
@@ -279,14 +280,17 @@ PROGRAM{
   $MAGTSale$_fun_OP_BUY PROCREF:<{
     2963393278 PUSHINT
   }>
+  $MAGTSale$_fun_OP_WITHDRAW PROCREF:<{
+    30583 PUSHINT
+  }>
   $MAGTSale$_fun_GAS_BUFFER_TON PROCREF:<{
-    50000000 PUSHINT
+    10000000 PUSHINT
   }>
   $MAGTSale$_fun_FWD_TO_RECIPIENT PROCREF:<{
     30000000 PUSHINT
   }>
   $MAGTSale$_fun_CALL_VALUE PROCREF:<{
-    50000000 PUSHINT
+    100000000 PUSHINT
   }>
   $MAGTSale$_fun_get_owner PROCREF:<{
     s9 PUSH
@@ -547,59 +551,63 @@ PROGRAM{
     s3 s3 XCHG2
   }>
   $MAGTSale$_fun_send_jetton_transfer PROCREF:<{
-    FALSE
+        NEWC
+        ENDC
+    TRUE
     PUSHNULL
         NEWC
-    s9 s15 XCHG
-    s8 s14 XCHG
-    s7 s13 XCHG
-    s6 s12 XCHG
-    s5 s11 XCHG
-    s4 s10 XCHG
-    s3 s15 XCHG
-    s14 s13 s12 XCHG3
+    s9 16 s() XCHG
+    s8 s15 XCHG
+    s7 s14 XCHG
+    s6 s13 XCHG
+    s5 s12 XCHG
+    s4 s11 XCHG
+    s3 s10 XCHG
+    s2 16 s() XCHG
+    s15 s14 XCHG2
     $MAGTSale$_fun_OP_JETTON_TRANSFER INLINECALLDICT
-    s0 s13 XCHG2
+    s0 s15 XCHG2
     32 STU
     0 PUSHINT
     SWAP
     64 STU
-    s1 s10 XCHG
+    s1 s12 XCHG
     128 STU
-    s14 PUSH
+    s0 s10 XCHG2
         STSLICER
-    s0 s14 XCHG2
+        MYADDR
         STSLICER
-    s1 s11 XCHG
+    s1 s13 XCHG
         STOPTREF
     s6 s9 XCHG
     s5 s8 XCHG
     s4 s7 XCHG
     s3 s6 XCHG
-    s5 s4 s0 XCHG3
-    s3 s10 XCHG
-    s12 s1 s10 XCHG3
+    s5 s4 s11 XCHG3
+    s1 s12 XCHG
+    s1 s3 XCHG
     $MAGTSale$_fun_FWD_TO_RECIPIENT INLINECALLDICT
-    s1 s11 XCHG
+    s1 s12 XCHG
         STVARUINT16
-    s1 s11 XCHG
+    s1 s13 XCHG
         1 STI
-    s8 s9 XCHG
-    s7 s8 XCHG
-    s6 s7 XCHG
-    s5 s6 XCHG
-    s4 s5 XCHG
-    s3 s4 XCHG
-    s1 s10 s10 XCHG3
-    s0 s3 XCHG
+    s1 s11 XCHG
+        STREF
+    s7 s9 XCHG
+    s6 s8 XCHG
+    s5 s7 XCHG
+    s4 s6 XCHG
+    s3 s5 XCHG
+    s4 s3 s0 XCHG3
+    s10 s11 s11 XCHG3
     $MAGTSale$_fun_CALL_VALUE INLINECALLDICT
     TRUE
     1 PUSHINT
-    s0 s13 XCHG
+    s0 s14 XCHG
         ENDC
-    s4 s14 XCHG
+    s4 s13 XCHG
     s1 s3 s0 XCHG3
-    s1 s13 XCHG
+    s1 s14 XCHG
     $SendParameters$_constructor_to_value_bounce_mode_body INLINECALLDICT
         NEWC
         b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
@@ -667,7 +675,8 @@ PROGRAM{
         // Group 5: Sending the message, with `mode` on top
         SWAP
         SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
-    2 8 BLKSWAP
+    s7 s9 XCHG
+    2 7 BLKSWAP
   }>
   $MessageParameters$_constructor_bounce_to_value_mode_body PROCINLINE:<{
     s3 s3 XCHG2
@@ -725,6 +734,8 @@ PROGRAM{
     $RefQuery$_to_external INLINECALLDICT
   }>
   recv_internal PROC:<{
+    c2 SAVE
+    SAMEALTSAVE
     SWAP
     CTOS
     2 PUSHINT
@@ -775,37 +786,94 @@ PROGRAM{
       $MAGTSale$_fun_notify INLINECALLDICT
       $MAGTSale$_contract_store INLINECALLDICT
     }>
+    __tact_context_get_sender INLINECALLDICT
+    s10 PUSH
+        SBITS
+    31 GTINT
+    IF:<{
+      s10 PUSH
+      32 PLDU
+      s1 s10 XCHG
+      s1 s9 XCHG
+      s1 s8 XCHG
+      s1 s7 XCHG
+      s6 s12 XCHG2
+      s1 s5 XCHG
+      s1 s4 XCHG
+      s3 s3 s0 XCHG3
+      $MAGTSale$_fun_OP_WITHDRAW INLINECALLDICT
+      s1 s13 XCHG
+      EQUAL
+      IFJMP:<{
+        s0 s10 XCHG
+        32 LDU
+        NIP
+            LDVARUINT16
+        DROP
+        47989 PUSHINT
+        s10 s9 XCPU
+        SDEQ
+        s1 s10 XCHG
+        THROWANYIFNOT
+        s7 PUSH
+        s0 s11 XCHG
+        s7 s10 XCHG
+        s6 s9 XCHG
+        s5 s8 XCHG
+        s4 s7 XCHG
+        s3 s6 XCHG
+        s0 s5 s5 XCHG3
+        s0 s4 XCHG
+        s0 s3 XCHG
+        $MAGTSale$_fun_send_raw_ton INLINECALLDICT
+        $MAGTSale$_contract_store INLINECALLDICT
+        RETALT
+      }>
+      9 ROLL
+    }>
+    s10 PUSH
+        SBITS
+    IF:<{
+      s10 PUSH
+          SBITS
+      32 LESSINT
+      IFJMP:<{
+        DROP
+        s9 POP
+        s7 s9 XCHG
+        2 7 BLKSWAP
+        $MAGTSale$_contract_store INLINECALLDICT
+        RETALT
+      }>
+      s0 s10 XCHG
+      32 LDU
+      s1 s10 XCHG
+      s1 s9 XCHG
+      s1 s8 XCHG
+      s1 s7 XCHG
+      s6 s12 XCHG2
+      s1 s5 XCHG
+      s1 s4 XCHG
+      s3 s3 s0 XCHG3
+      $MAGTSale$_fun_OP_BUY INLINECALLDICT
+      s1 s11 XCHG
+      NEQ
+      IFJMP:<{
+        s10 POP
+        s10 POP
+        3 7 BLKSWAP
+        $MAGTSale$_contract_store INLINECALLDICT
+        RETALT
+      }>
+      s9 s11 XCHG
+      10 ROLL
+    }>
     __tact_context_get INLINECALLDICT
     $Context$_get_value INLINECALLDICT
     7126 PUSHINT
     OVER
     0 GTINT
     THROWANYIFNOT
-    __tact_context_get_sender INLINECALLDICT
-    s11 PUSH
-        SBITS
-    31 GTINT
-    IF:<{
-      s0 s11 XCHG
-      32 LDU
-      9 3 BLKSWAP
-      30094 PUSHINT
-      s0 s14 XCHG
-      $MAGTSale$_fun_OP_BUY INLINECALLDICT
-      s1 s12 XCHG
-      EQUAL
-      s1 s14 XCHG
-      THROWANYIFNOT
-      s9 s12 XCHG
-      s8 s11 XCHG
-      s7 s10 XCHG
-      s6 s9 XCHG
-      s5 s8 XCHG
-      s4 s7 XCHG
-      s3 s6 XCHG
-      s5 s1 s3 XCHG3
-      s4 s2 XCHG2
-    }>
     s11 PUSH
         SBITS
     0 GTINT
@@ -826,11 +894,11 @@ PROGRAM{
         DROP
         s12 PUSH
         267 PUSHINT
-        s13 PUSH
+        s3 PUSH
         __tact_dict_exists_slice INLINECALLDICT
         NOT
         IF:<{
-          s0 s11 PUSH2
+          s0 s1 PUSH2
           SDEQ
           NOT
         }>ELSE<{
@@ -839,7 +907,7 @@ PROGRAM{
         IF:<{
           s1 s12 XCHG
           267 PUSHINT
-          s12 s1 PUXC
+          s13 s1 PUXC
           __tact_dict_set_slice_slice INLINECALLDICT
           s0 s11 XCHG
         }>ELSE<{
@@ -853,7 +921,7 @@ PROGRAM{
     }>
     s11 PUSH
     267 PUSHINT
-    s12 PUSH
+    s2 PUSH
     __tact_dict_exists_slice INLINECALLDICT
     IF:<{
       OVER
@@ -883,10 +951,10 @@ PROGRAM{
     s0 s14 XCHG2
     ADD
     43904 PUSHINT
-    s11 s1 PUSH2
+    s13 s1 PUSH2
     GEQ
     THROWANYIFNOT
-    s13 s10 XCPU
+    s13 s12 XCPU
     $MAGTSale$_fun_calc_human_tokens_from_ton INLINECALLDICT
     37401 PUSHINT
     OVER
@@ -992,21 +1060,21 @@ PROGRAM{
     s4 s5 XCHG
     s3 s4 XCHG
     s3 s13 s0 XCHG3
-    s2 s0 s14 XC2PU
+    s2 s0 s12 XC2PU
     $MAGTSale$_fun_send_jetton_transfer INLINECALLDICT
     s11 PUSH
     0 GTINT
     IF:<{
       DUP
       267 PUSHINT
-      s14 PUSH
+      s12 PUSH
       __tact_dict_exists_slice INLINECALLDICT
     }>ELSE<{
       FALSE
     }>
     IF:<{
       267 PUSHINT
-      s1 s0 s13 PUXC2
+      s1 s0 s11 PUXC2
       __tact_dict_get_slice_slice INLINECALLDICT
       DUP
       ISNULL
@@ -1022,16 +1090,14 @@ PROGRAM{
       s5 s7 XCHG
       s4 s6 XCHG
       s3 s5 XCHG
-      s2 s4 XCHG
-      s3 s13 XCHG
-      SWAP
+      s4 s0 s0 XCHG3
       $MAGTSale$_fun_send_jetton_transfer INLINECALLDICT
-      9 2 BLKSWAP
+      8 2 BLKSWAP
     }>ELSE<{
-      s11 POP
-      s11 POP
+      s10 POP
+      s10 POP
     }>
-    s0 s8 XCHG
+    s0 s10 XCHG
     0 PUSHINT
     s0 s12 XCHG
     SUB
@@ -1041,7 +1107,7 @@ PROGRAM{
     s4 s8 XCHG
     s3 s7 XCHG
     s6 s5 s0 XCHG3
-    s1 s3 s0 XCHG3
+    s4 s3 s0 XCHG3
     $MAGTSale$_fun_max INLINECALLDICT
     DUP
     0 GTINT

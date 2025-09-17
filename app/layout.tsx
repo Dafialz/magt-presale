@@ -4,30 +4,38 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "MAGT Presale",
-  description: "Claim & presale for Magic Time (MAGT) on TON",
+  title: "Magic Time (MAGT) — Presale",
+  description: "Claim & presale для Magic Time (MAGT) у мережі TON",
   icons: { icon: "/favicon.png" },
   openGraph: {
-    title: "MAGT Presale",
-    description: "Claim & presale for Magic Time (MAGT) on TON",
-    images: ["/logo.png"]
+    title: "Magic Time (MAGT) — Presale",
+    description: "Claim & presale для Magic Time (MAGT) у мережі TON",
+    images: ["/logo.png"],
   },
   twitter: {
     card: "summary",
-    title: "MAGT Presale",
-    description: "Claim & presale for Magic Time (MAGT) on TON",
-    images: ["/logo.png"]
+    title: "Magic Time (MAGT) — Presale",
+    description: "Claim & presale для Magic Time (MAGT) у мережі TON",
+    images: ["/logo.png"],
   },
-  themeColor: "#0b1120"
+  themeColor: "#0a0b10",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="uk">
+    <html lang="uk" suppressHydrationWarning>
+      <head>
+        {/* TonConnect manifest for wallets */}
+        <meta name="tonconnect-manifest" content="/tonconnect-manifest.json" />
+      </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          {/* Портал для модалок/тостів (за потреби) */}
+          <div id="portal-root" />
+        </Providers>
       </body>
     </html>
   );

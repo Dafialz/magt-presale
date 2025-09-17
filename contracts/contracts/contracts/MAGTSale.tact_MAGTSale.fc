@@ -83,6 +83,9 @@ _ $Context$_get_value((int, slice, int, slice) v) inline;
 ;; $MAGTSale$_fun_OP_BUY
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_OP_BUY((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref;
 
+;; $MAGTSale$_fun_OP_WITHDRAW
+((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_OP_WITHDRAW((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref;
+
 ;; $MAGTSale$_fun_GAS_BUFFER_TON
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_GAS_BUFFER_TON((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref;
 
@@ -219,6 +222,10 @@ builder $global_beginCell() impure asm """
     NEWC
 """;
 
+slice $global_myAddress() impure asm """
+    MYADDR
+""";
+
 int $global_myBalance() impure asm """
     BALANCE FIRST
 """;
@@ -330,6 +337,10 @@ builder $Builder$_fun_storeCoins(builder $self, int $value) impure asm """
     STVARUINT16
 """;
 
+builder $Builder$_fun_storeRef(cell $cell, builder $self) impure asm """
+    STREF
+""";
+
 builder $Builder$_fun_storeMaybeRef(cell $cell, builder $self) impure asm """
     STOPTREF
 """;
@@ -344,6 +355,10 @@ builder $Builder$_fun_storeAddress(builder $self, slice $address) impure asm """
 
 (slice, int) $Slice$_fun_loadBit(slice $self) impure asm( -> 1 0) """
     1 LDI
+""";
+
+(slice, int) $Slice$_fun_loadCoins(slice $self) impure asm( -> 1 0) """
+    LDVARUINT16
 """;
 
 int $Slice$_fun_bits(slice $self) impure asm """
@@ -587,72 +602,78 @@ builder $MAGTSale$_store(builder build_0, (slice, slice, slice, int, cell, int, 
     return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_1);
 }
 
+((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_OP_WITHDRAW((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref {
+    var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
+    var $fresh$ret_2 = 30583;
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_2);
+}
+
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_GAS_BUFFER_TON((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
-    var $fresh$ret_2 = 50000000;
-    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_2);
+    var $fresh$ret_3 = 10000000;
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_3);
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_FWD_TO_RECIPIENT((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
-    var $fresh$ret_3 = 30000000;
-    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_3);
+    var $fresh$ret_4 = 30000000;
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_4);
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_CALL_VALUE((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
-    var $fresh$ret_4 = 50000000;
-    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_4);
+    var $fresh$ret_5 = 100000000;
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_5);
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), slice) $MAGTSale$_fun_get_owner((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
-    var $fresh$ret_5 = $self'owner;
-    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_5);
+    var $fresh$ret_6 = $self'owner;
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_6);
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), (int, int, int)) $MAGTSale$_fun_get_level((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
-    var $fresh$ret_6 = $LevelInfo$_constructor_level_remaining_totalSold($self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman);
-    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_6);
+    var $fresh$ret_7 = $LevelInfo$_constructor_level_remaining_totalSold($self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman);
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_7);
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_get_ref_pool_left((slice, slice, slice, int, cell, int, int, int, int, cell) $self) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
-    var $fresh$ret_7 = $self'refPoolLeftHuman;
-    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_7);
+    var $fresh$ret_8 = $self'refPoolLeftHuman;
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_8);
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), (int, slice)) $MAGTSale$_fun_get_referrer((slice, slice, slice, int, cell, int, int, int, int, cell) $self, slice $addr) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
     if (__tact_dict_exists_slice($self'refOf, 267, $addr)) {
-        var $fresh$ret_8 = $RefQuery$_constructor_exists_ref(true, __tact_dict_get_slice_slice($self'refOf, 267, $addr));
-        return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_8);
-    } else {
-        var $fresh$ret_9 = $RefQuery$_constructor_exists_ref(false, null());
+        var $fresh$ret_9 = $RefQuery$_constructor_exists_ref(true, __tact_dict_get_slice_slice($self'refOf, 267, $addr));
         return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_9);
+    } else {
+        var $fresh$ret_10 = $RefQuery$_constructor_exists_ref(false, null());
+        return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_10);
     }
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_min((slice, slice, slice, int, cell, int, int, int, int, cell) $self, int $a, int $b) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
     if (($a < $b)) {
-        var $fresh$ret_10 = $a;
-        return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_10);
-    } else {
-        var $fresh$ret_11 = $b;
+        var $fresh$ret_11 = $a;
         return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_11);
+    } else {
+        var $fresh$ret_12 = $b;
+        return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_12);
     }
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_max((slice, slice, slice, int, cell, int, int, int, int, cell) $self, int $a, int $b) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
     if (($a > $b)) {
-        var $fresh$ret_12 = $a;
-        return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_12);
-    } else {
-        var $fresh$ret_13 = $b;
+        var $fresh$ret_13 = $a;
         return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_13);
+    } else {
+        var $fresh$ret_14 = $b;
+        return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_14);
     }
 }
 
@@ -668,8 +689,8 @@ builder $MAGTSale$_store(builder build_0, (slice, slice, slice, int, cell, int, 
         $res = ($res * $ten);
         $i = ($i + 1);
     }
-    var $fresh$ret_14 = $res;
-    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_14);
+    var $fresh$ret_15 = $res;
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_15);
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), int) $MAGTSale$_fun_calc_human_tokens_from_ton((slice, slice, slice, int, cell, int, int, int, int, cell) $self, int $paymentNano) impure inline_ref {
@@ -708,8 +729,8 @@ builder $MAGTSale$_store(builder build_0, (slice, slice, slice, int, cell, int, 
             $rem = 0;
         }
     }
-    var $fresh$ret_15 = $outHuman;
-    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_15);
+    var $fresh$ret_16 = $outHuman;
+    return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), $fresh$ret_16);
 }
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), ()) $MAGTSale$_fun_send_raw_ton((slice, slice, slice, int, cell, int, int, int, int, cell) $self, slice $to, int $amountNano) impure inline_ref {
@@ -720,7 +741,8 @@ builder $MAGTSale$_store(builder build_0, (slice, slice, slice, int, cell, int, 
 
 ((slice, slice, slice, int, cell, int, int, int, int, cell), ()) $MAGTSale$_fun_send_jetton_transfer((slice, slice, slice, int, cell, int, int, int, int, cell) $self, slice $jw, int $amountRaw, slice $destination) impure inline_ref {
     var (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)) = $self;
-    builder $b = $Builder$_fun_storeBit(false, $Builder$_fun_storeCoins($Builder$_fun_storeMaybeRef(null(), $Builder$_fun_storeAddress($Builder$_fun_storeAddress(store_uint(store_uint(store_uint($global_beginCell(), ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_OP_JETTON_TRANSFER(), 32), 0, 64), $amountRaw, 128), $destination), $destination)), ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_FWD_TO_RECIPIENT()));
+    cell $empty = $Builder$_fun_endCell($global_beginCell());
+    builder $b = $Builder$_fun_storeRef($empty, $Builder$_fun_storeBit(true, $Builder$_fun_storeCoins($Builder$_fun_storeMaybeRef(null(), $Builder$_fun_storeAddress($Builder$_fun_storeAddress(store_uint(store_uint(store_uint($global_beginCell(), ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_OP_JETTON_TRANSFER(), 32), 0, 64), $amountRaw, 128), $destination), $global_myAddress())), ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_FWD_TO_RECIPIENT())));
     $global_send($SendParameters$_constructor_to_value_bounce_mode_body($jw, ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_CALL_VALUE(), true, 1, $Builder$_fun_endCell($b)));
     return (($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf), ());
 }
@@ -791,14 +813,33 @@ _ %get_referrer(slice $addr) method_id(103639) {
     
     ;; Receiver fallback
     slice $msg = in_msg;
+    slice $sender = __tact_context_get_sender();
+    if (($Slice$_fun_bits($msg) >= 32)) {
+        int $op_pre = preload_uint($msg, 32);
+        if (($op_pre == ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_OP_WITHDRAW())) {
+            $msg~load_uint(32);
+            int $amount = $msg~$Slice$_fun_loadCoins();
+            throw_unless(47989, ( equal_slices_bits($sender, $self'owner) ));
+            ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_send_raw_ton($self'owner, $amount);
+            $MAGTSale$_contract_store(($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf));
+            return ();
+        }
+    }
+    slice $cs = $msg;
+    if ($Slice$_fun_bits($cs)) {
+        if (($Slice$_fun_bits($cs) < 32)) {
+            $MAGTSale$_contract_store(($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf));
+            return ();
+        }
+        int $op_read = $cs~load_uint(32);
+        if (($op_read != ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_OP_BUY())) {
+            $MAGTSale$_contract_store(($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf));
+            return ();
+        }
+    }
+    slice $buyer = $sender;
     int $tons = $Context$_get_value(__tact_context_get());
     throw_unless(7126, ($tons > 0));
-    slice $cs = $msg;
-    slice $buyer = __tact_context_get_sender();
-    if (($Slice$_fun_bits($cs) >= 32)) {
-        int $op_read = $cs~load_uint(32);
-        throw_unless(30094, ($op_read == ($self'owner, $self'magtMinter, $self'saleJW, $self'magtDecimals, $self'levels, $self'currentLevel, $self'remainingInLevel, $self'totalSoldHuman, $self'refPoolLeftHuman, $self'refOf)~$MAGTSale$_fun_OP_BUY()));
-    }
     if (($Slice$_fun_bits($cs) >= 1)) {
         int $has_ref = $cs~$Slice$_fun_loadBit();
         if (( ($has_ref) ? (($Slice$_fun_bits($cs) >= 267)) : (false) )) {
