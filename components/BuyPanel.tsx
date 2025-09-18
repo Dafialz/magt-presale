@@ -19,25 +19,24 @@ function toNanoStr(tonStr: string): string {
   if (!s) return "0";
   const [intPart = "0", fracPartRaw = ""] = s.split(".");
   const fracPadded = (fracPartRaw + "000000000").slice(0, 9);
-  return (
-    BigInt(intPart) * (10n ** 9n) +
-    BigInt(fracPadded || "0")
-  ).toString();
+  return (BigInt(intPart) * (10n ** 9n) + BigInt(fracPadded || "0")).toString();
 }
 
+// Браузерна base64, з м’яким fallback на Buffer без типозалежностей
 function bytesToBase64(arr: Uint8Array): string {
-  if (typeof window === "undefined") {
-    // @ts-ignore
-    return Buffer.from(arr).toString("base64");
-  }
   let bin = "";
-  arr.forEach((b) => (bin += String.fromCharCode(b)));
-  return btoa(bin);
+  for (let i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
+
+  if (typeof btoa === "function") return btoa(bin);
+
+  // fallback на середовище, де є Buffer (наприклад, під час тестів)
+  const Buf = (globalThis as any)?.Buffer;
+  return Buf ? Buf.from(arr).toString("base64") : bin;
 }
 
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
-  const m = document.cookie.split("; ").find(x => x.startsWith(name + "="));
+  const m = document.cookie.split("; ").find((x) => x.startsWith(name + "="));
   return m ? decodeURIComponent(m.split("=")[1] || "") : null;
 }
 
@@ -111,7 +110,9 @@ export default function BuyPanel({
         .catch(() => void 0)
         .finally(() => {
           // дублюємо локально (як бекап) і лочимо
-          try { localStorage.setItem(KEY, ref); } catch {}
+          try {
+            localStorage.setItem(KEY, ref);
+          } catch {}
           setReferral(ref);
           setLockedRef(true);
           toast.success("Реферал закріплено назавжди (цей браузер).");
@@ -138,9 +139,7 @@ export default function BuyPanel({
       return;
     }
     const magt = ton / priceTonPerMagt;
-    setAmountMAGT(
-      new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 2 }).format(magt)
-    );
+    setAmountMAGT(new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 2 }).format(magt));
   }, [amountTON, calcMode, priceTonPerMagt]);
 
   useEffect(() => {
@@ -206,7 +205,7 @@ export default function BuyPanel({
         placeholder="EQ... (адрес друга у TON)"
         value={referral}
         onChange={(e) => setReferral(e.target.value.trim())}
-        disabled={lockedRef} // якщо закріплено — не даємо змінювати
+        disabled={lockedRef}
       />
       {!lockedRef && referral && !isFriendlyTonAddress(referral) && (
         <div className="subtle text-xs" style={{ color: "#fca5a5" }}>
@@ -214,9 +213,7 @@ export default function BuyPanel({
         </div>
       )}
       {lockedRef && (
-        <div className="subtle text-xs">
-          Реферал збережений (cookie + localStorage).
-        </div>
+        <div className="subtle text-xs">Реферал збережений (cookie + localStorage).</div>
       )}
 
       {/* Перемикач режиму калькулятора */}
@@ -275,11 +272,7 @@ export default function BuyPanel({
           />
           <div className="subtle text-sm">
             Потрібно TON ≈{" "}
-            <b>
-              {Number(amountTON || 0).toLocaleString("uk-UA", {
-                maximumFractionDigits: 2,
-              })}
-            </b>
+            <b>{Number(amountTON || 0).toLocaleString("uk-UA", { maximumFractionDigits: 2 })}</b>
           </div>
         </>
       )}
@@ -292,11 +285,7 @@ export default function BuyPanel({
 
       {/* Згода */}
       <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={agree}
-          onChange={(e) => setAgree(e.target.checked)}
-        />
+        <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
         Погоджуюсь з правилами пресейлу (безпека, блокування, обмеження)
       </label>
 

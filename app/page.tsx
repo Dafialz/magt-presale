@@ -2,8 +2,8 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { TonConnectButton, useTonConnectUI } from "@tonconnect/ui-react";
+import React, { useEffect, useRef, useState } from "react";
+import { TonConnectButton } from "@tonconnect/ui-react";
 import toast from "react-hot-toast";
 
 // Компоненти
@@ -15,7 +15,6 @@ import Tokenomics from "../components/Tokenomics";
 import Roadmap from "../components/Roadmap";
 
 /* ========= Types ========= */
-type AllocResp = { ok: true; amount: string } | { ok: false; error: string };
 type SaleApiResp =
   | {
       ok: true;
@@ -32,60 +31,20 @@ type SaleApiResp =
 
 /* ========= ENV / CONST ========= */
 const SALE_ADDRESS = process.env.NEXT_PUBLIC_SALE_ADDRESS || ""; // EQ...
-const DECIMALS = Number(process.env.NEXT_PUBLIC_MAGT_DECIMALS || 9);
 const PRICE_TON_PER_MAGT_FALLBACK = 0.00383; // fallback, поки не прийшли дані з /api/sale
 const TARGET_TON_FALLBACK = 6_500_000;
 const GAS_HINT_MIN = 0.05;
 const GAS_HINT_MAX = 0.1;
 
-// інтервал автооновлення (можеш винести у .env як NEXT_PUBLIC_SALE_REFRESH_MS)
+// інтервал автооновлення (винести у .env як NEXT_PUBLIC_SALE_REFRESH_MS за бажанням)
 const REFRESH_MS = Number(process.env.NEXT_PUBLIC_SALE_REFRESH_MS || 20000);
 
 /* ========= Utils ========= */
-function formatAmount(nano: string, decimals: number) {
-  const big = BigInt(nano || "0");
-  const base = BigInt(10) ** BigInt(decimals);
-  const int = big / base;
-  const frac = (big % base).toString().padStart(decimals, "0").replace(/0+$/, "");
-  return frac.length ? `${int}.${frac}` : `${int}`;
+function isAbortError(err: unknown): boolean {
+  return typeof err === "object" && err !== null && "name" in err && (err as { name?: string }).name === "AbortError";
 }
 
 export default function Page() {
-  // ===== Wallet / alloc =====
-  const [tonConnectUI] = useTonConnectUI();
-  const connected = useMemo(() => !!tonConnectUI?.account, [tonConnectUI?.account]);
-  const [userAddr, setUserAddr] = useState<string>("");
-  const [alloc, setAlloc] = useState<string>("0");
-  const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    setUserAddr(tonConnectUI?.account?.address ?? "");
-  }, [tonConnectUI?.account?.address]);
-
-  async function refreshAlloc() {
-    if (!userAddr) return;
-    setLoading(true);
-    try {
-      const r = await fetch(`/api/alloc?user=${encodeURIComponent(userAddr)}`, { cache: "no-store" });
-      const j: AllocResp = await r.json();
-      if (j.ok) {
-        setAlloc(j.amount);
-        toast.success("Розподілення оновлено");
-      } else {
-        toast.error("Не вдалося отримати алокацію");
-      }
-    } catch {
-      toast.error("Помилка мережі під час отримання алокації");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (userAddr) refreshAlloc();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userAddr]);
-
   // ===== Дані сейлу (динаміка через /api/sale) =====
   const [raisedTon, setRaisedTon] = useState<number>(0);
   const [targetTon, setTargetTon] = useState<number>(TARGET_TON_FALLBACK);
@@ -125,8 +84,8 @@ export default function Page() {
           lastToastAtRef.current = now;
         }
       }
-    } catch (e) {
-      if ((e as any)?.name === "AbortError") return;
+    } catch (e: unknown) {
+      if (isAbortError(e)) return;
       const now = Date.now();
       if (now - lastToastAtRef.current > 60_000) {
         toast.error("Проблема з мережею під час отримання даних сейлу");
@@ -213,7 +172,7 @@ export default function Page() {
 
       {/* 3) BUY PANEL */}
       <section className="grid md:grid-cols-2 gap-8" id="buy">
-        {/* Ліва колонка — короткі параметри (без дублювань із Hero) */}
+        {/* Ліва колонка — короткі параметри */}
         <div className="card space-y-4">
           <div className="flex items-center justify-between pb-2 border border-0 border-b border-[var(--border)]/60">
             <h3 className="text-lg font-semibold">Параметри пресейлу</h3>
@@ -254,7 +213,7 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Права колонка — повний компонент покупки з калькулятором і TonConnect */}
+        {/* Права колонка — покупка */}
         <BuyPanel
           priceTonPerMagt={price || PRICE_TON_PER_MAGT_FALLBACK}
           gasHintMin={GAS_HINT_MIN}
