@@ -22,16 +22,11 @@ function toNanoStr(tonStr: string): string {
   return (BigInt(intPart) * (10n ** 9n) + BigInt(fracPadded || "0")).toString();
 }
 
-// Браузерна base64, з м’яким fallback на Buffer без типозалежностей
+// Легка браузерна base64 без Buffer і без any
 function bytesToBase64(arr: Uint8Array): string {
   let bin = "";
   for (let i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
-
-  if (typeof btoa === "function") return btoa(bin);
-
-  // fallback на середовище, де є Buffer (наприклад, під час тестів)
-  const Buf = (globalThis as any)?.Buffer;
-  return Buf ? Buf.from(arr).toString("base64") : bin;
+  return typeof btoa === "function" ? btoa(bin) : "";
 }
 
 function getCookie(name: string): string | null {
@@ -110,9 +105,7 @@ export default function BuyPanel({
         .catch(() => void 0)
         .finally(() => {
           // дублюємо локально (як бекап) і лочимо
-          try {
-            localStorage.setItem(KEY, ref);
-          } catch {}
+          try { localStorage.setItem(KEY, ref); } catch {}
           setReferral(ref);
           setLockedRef(true);
           toast.success("Реферал закріплено назавжди (цей браузер).");
