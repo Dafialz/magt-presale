@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { TonConnectButton } from "@tonconnect/ui-react";
 import toast from "react-hot-toast";
 
@@ -57,7 +57,7 @@ export default function Page() {
   const controllerRef = useRef<AbortController | null>(null);
   const lastToastAtRef = useRef<number>(0);
 
-  const fetchSaleOnce = async () => {
+  const fetchSaleOnce = useCallback(async () => {
     // якщо вкладка неактивна — пропускаємо (економія)
     if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
 
@@ -92,7 +92,7 @@ export default function Page() {
         lastToastAtRef.current = now;
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -136,8 +136,7 @@ export default function Page() {
         document.removeEventListener("visibilitychange", onVis);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchSaleOnce]);
 
   const progressPct = Math.min(100, Math.max(0, (raisedTon / targetTon) * 100));
 
