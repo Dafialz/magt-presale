@@ -2,20 +2,44 @@
 "use client";
 
 import Image from "next/image";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { TonConnectButton, useTonConnectUI } from "@tonconnect/ui-react";
-import React, { useEffect, useMemo, useState } from "react";
-import { beginCell } from "@ton/core";
+import toast from "react-hot-toast";
+
+// Компоненти
+import HeaderBar from "../components/HeaderBar";
+import HeroSection from "../components/HeroSection";
+import BuyPanel from "../components/BuyPanel";
+import ValueProps from "../components/ValueProps";
+import Tokenomics from "../components/Tokenomics";
+import Roadmap from "../components/Roadmap";
 
 /* ========= Types ========= */
 type AllocResp = { ok: true; amount: string } | { ok: false; error: string };
+type SaleApiResp =
+  | {
+      ok: true;
+      data: {
+        raisedTon: number;
+        targetTon: number;
+        level: number;
+        priceTonPerToken: number;
+        leftOnLevel: number;
+        updatedAt: string;
+      };
+    }
+  | { ok: false; error?: string };
 
-/* ========= ENV ========= */
-const SALE_ADDRESS = process.env.NEXT_PUBLIC_SALE_ADDRESS || ""; // EQ... (bounceable)
+/* ========= ENV / CONST ========= */
+const SALE_ADDRESS = process.env.NEXT_PUBLIC_SALE_ADDRESS || ""; // EQ...
 const DECIMALS = Number(process.env.NEXT_PUBLIC_MAGT_DECIMALS || 9);
+const PRICE_TON_PER_MAGT_FALLBACK = 0.00383; // fallback, поки не прийшли дані з /api/sale
+const TARGET_TON_FALLBACK = 6_500_000;
+const GAS_HINT_MIN = 0.05;
+const GAS_HINT_MAX = 0.1;
 
-/* ========= Constants (UI calc only) ========= */
-const PRICE_TON_PER_MAGT = 0.00383; // візуальний розрахунок; реальна ціна береться з контракту
-const TARGET_TON = 6_500_000; // ✅ ціль у TON
+// інтервал автооновлення (можеш винести у .env як NEXT_PUBLIC_SALE_REFRESH_MS)
+const REFRESH_MS = Number(process.env.NEXT_PUBLIC_SALE_REFRESH_MS || 20000);
 
 /* ========= Utils ========= */
 function formatAmount(nano: string, decimals: number) {
@@ -26,50 +50,13 @@ function formatAmount(nano: string, decimals: number) {
   return frac.length ? `${int}.${frac}` : `${int}`;
 }
 
-function toNanoStr(tonStr: string): string {
-  const s = (tonStr || "0").trim();
-  if (!s) return "0";
-  const [intPart = "0", fracPartRaw = ""] = s.split(".");
-  const fracPadded = (fracPartRaw + "000000000").slice(0, 9);
-  return (
-    BigInt(intPart) * (BigInt(10) ** BigInt(9)) +
-    BigInt(fracPadded || "0")
-  ).toString();
-}
-
-// ---- base64 helper для браузера (без Buffer) ----
-function bytesToBase64(arr: Uint8Array): string {
-  if (typeof window === "undefined") {
-    // @ts-ignore (на сервері Buffer є)
-    return Buffer.from(arr).toString("base64");
-  }
-  let bin = "";
-  arr.forEach((b) => (bin += String.fromCharCode(b)));
-  return btoa(bin);
-}
-
-// ---- OP_BUY payload для контракту сейлу ----
-const OP_BUY = 0xb0a1cafe as const;
-function buildBuyBodyBase64(refAddress?: string): string {
-  const hasRef = !!refAddress;
-  const cell = beginCell()
-    .storeUint(OP_BUY, 32) // opcode
-    .storeBit(hasRef ? 1 : 0); // біт реферала
-  // якщо буде потрібно — можна додати адрес реферала через .storeAddress(...)
-  return bytesToBase64(cell.endCell().toBoc({ idx: false }));
-}
-
-/* ========= Page ========= */
 export default function Page() {
+  // ===== Wallet / alloc =====
   const [tonConnectUI] = useTonConnectUI();
+  const connected = useMemo(() => !!tonConnectUI?.account, [tonConnectUI?.account]);
   const [userAddr, setUserAddr] = useState<string>("");
   const [alloc, setAlloc] = useState<string>("0");
   const [loading, setLoading] = useState<boolean>(false);
-
-  const [amountTON, setAmountTON] = useState<string>("100"); // як на скріні — поле суми
-  const [agree, setAgree] = useState<boolean>(false);
-  const [referral, setReferral] = useState<string>(""); // опціонально
-  const connected = useMemo(() => !!tonConnectUI?.account, [tonConnectUI?.account]);
 
   useEffect(() => {
     setUserAddr(tonConnectUI?.account?.address ?? "");
@@ -81,225 +68,214 @@ export default function Page() {
     try {
       const r = await fetch(`/api/alloc?user=${encodeURIComponent(userAddr)}`, { cache: "no-store" });
       const j: AllocResp = await r.json();
-      if (j.ok) setAlloc(j.amount);
-    } catch {}
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    refreshAlloc();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userAddr]);
-
-  const magtPreview = (() => {
-    const ton = Number(amountTON || "0");
-    if (!isFinite(ton) || ton <= 0) return "0";
-    const magt = ton / PRICE_TON_PER_MAGT;
-    return new Intl.NumberFormat("uk-UA", { maximumFractionDigits: 2 }).format(magt);
-  })();
-
-  async function handleBuy() {
-    if (!connected || !userAddr) return alert("Підключи гаманець TON");
-    if (!SALE_ADDRESS) return alert("NEXT_PUBLIC_SALE_ADDRESS is not set");
-    if (!agree) return alert("Підтвердь правила пресейлу");
-    const amt = Number(amountTON || "0");
-    if (!isFinite(amt) || amt < 0.1) return alert("Введи суму ≥ 0.1 TON");
-
-    try {
-      await tonConnectUI.sendTransaction({
-        validUntil: Math.floor(Date.now() / 1000) + 300,
-        messages: [
-          {
-            address: SALE_ADDRESS,
-            amount: toNanoStr(String(amt)),
-            payload: buildBuyBodyBase64(referral || undefined),
-          },
-        ],
-      });
-      alert("Транзакцію надіслано. Перевір історію у гаманці/експлорері.");
+      if (j.ok) {
+        setAlloc(j.amount);
+        toast.success("Розподілення оновлено");
+      } else {
+        toast.error("Не вдалося отримати алокацію");
+      }
     } catch {
-      alert("Покупка скасована або не вдалася.");
+      toast.error("Помилка мережі під час отримання алокації");
+    } finally {
+      setLoading(false);
     }
   }
 
+  useEffect(() => {
+    if (userAddr) refreshAlloc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userAddr]);
+
+  // ===== Дані сейлу (динаміка через /api/sale) =====
+  const [raisedTon, setRaisedTon] = useState<number>(0);
+  const [targetTon, setTargetTon] = useState<number>(TARGET_TON_FALLBACK);
+  const [level, setLevel] = useState<number>(1);
+  const [price, setPrice] = useState<number>(PRICE_TON_PER_MAGT_FALLBACK);
+  const [leftOnLevel, setLeftOnLevel] = useState<number>(0);
+
+  // автооновлення з AbortController + пауза у фоновому режимі
+  const pollTimerRef = useRef<number | null>(null);
+  const controllerRef = useRef<AbortController | null>(null);
+  const lastToastAtRef = useRef<number>(0);
+
+  const fetchSaleOnce = async () => {
+    // якщо вкладка неактивна — пропускаємо (економія)
+    if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+
+    // скасовуємо попередній запит, якщо ще триває
+    controllerRef.current?.abort();
+    const ctrl = new AbortController();
+    controllerRef.current = ctrl;
+
+    try {
+      const r = await fetch("/api/sale", { cache: "no-store", signal: ctrl.signal });
+      const j: SaleApiResp = await r.json();
+      if ("ok" in j && j.ok) {
+        const d = j.data;
+        setRaisedTon(d.raisedTon ?? 0);
+        setTargetTon(d.targetTon ?? TARGET_TON_FALLBACK);
+        setLevel(d.level ?? 1);
+        setPrice(d.priceTonPerToken ?? PRICE_TON_PER_MAGT_FALLBACK);
+        setLeftOnLevel(d.leftOnLevel ?? 0);
+      } else {
+        // показуємо toast не частіше, ніж раз на 60с
+        const now = Date.now();
+        if (now - lastToastAtRef.current > 60_000) {
+          toast.error(j?.error || "Не вдалося завантажити дані сейлу");
+          lastToastAtRef.current = now;
+        }
+      }
+    } catch (e) {
+      if ((e as any)?.name === "AbortError") return;
+      const now = Date.now();
+      if (now - lastToastAtRef.current > 60_000) {
+        toast.error("Проблема з мережею під час отримання даних сейлу");
+        lastToastAtRef.current = now;
+      }
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    // перший фетч одразу
+    fetchSaleOnce();
+
+    // інтервал оновлення
+    function startPolling() {
+      if (!mounted) return;
+      if (pollTimerRef.current) window.clearInterval(pollTimerRef.current);
+      pollTimerRef.current = window.setInterval(fetchSaleOnce, Math.max(5000, REFRESH_MS));
+    }
+    function stopPolling() {
+      if (pollTimerRef.current) {
+        window.clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+    }
+
+    // пауза/ресюм при зміні видимості
+    const onVis = () => {
+      if (document.visibilityState === "visible") {
+        fetchSaleOnce(); // миттєво підтягнути свіжі дані
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    };
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", onVis);
+    }
+
+    startPolling();
+
+    return () => {
+      mounted = false;
+      stopPolling();
+      controllerRef.current?.abort();
+      if (typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", onVis);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const progressPct = Math.min(100, Math.max(0, (raisedTon / targetTon) * 100));
+
   return (
     <main className="container space-y-10">
-      {/* Top bar */}
-      <header className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Image src="/logo.png" alt="MAGT" width={32} height={32} priority />
-          <div className="h1">Magic Time</div>
-        </div>
+      {/* 1) HEADER */}
+      <HeaderBar>
         <nav className="flex items-center gap-3">
           <a className="subtle hidden md:inline-block" href="#buy">Купити</a>
+          <a className="subtle hidden md:inline-block" href="#why">Чому ми</a>
           <a className="subtle hidden md:inline-block" href="#token">Токеноміка</a>
           <a className="subtle hidden md:inline-block" href="#roadmap">Дорожня карта</a>
           <a className="subtle hidden md:inline-block" href="#faq">FAQ</a>
+          <a className="btn btn-primary hidden md:inline-block" href="#buy">Купити MAGT</a>
           <TonConnectButton />
         </nav>
-      </header>
+      </HeaderBar>
 
-      {/* Hero */}
-      <section className="grid md:grid-cols-2 gap-8 items-center">
-        <div className="space-y-5">
-          <div className="badge">MAGIC TIME (MAGT) — Presale</div>
-          <h2 className="hero-title">Купуй MAGT швидко, прозоро, ончейн</h2>
-          <p className="subtle text-base">
-            Оплата: <b>TON</b>. Мінімальний внесок — <b>0.1 TON</b>. Контракт автоматично
-            доставляє MAGT на твій Jetton Wallet.
-          </p>
-          <div className="flex gap-3">
-            <a href="#buy" className="btn btn-primary">Купити MAGT</a>
-            <a href="#token" className="btn">Деталі токеноміки</a>
+      {/* 2) HERO */}
+      <HeroSection
+        targetTon={targetTon}
+        raisedTon={raisedTon}
+        progressPct={progressPct}
+        actionLeft={<a href="#buy" className="btn btn-primary">Купити зараз</a>}
+        actionRight={<a href="/whitepaper.pdf" className="btn" target="_blank" rel="noreferrer">Whitepaper</a>}
+        media={
+          <div className="card p-6">
+            <Image src="/bg.png" alt="Magic Time" width={800} height={480} className="rounded-2xl" />
           </div>
-        </div>
-        <div className="card p-6">
-          <Image src="/bg.png" alt="Magic Time" width={800} height={480} className="rounded-2xl" />
-        </div>
-      </section>
+        }
+      />
 
-      {/* Main two panels */}
+      {/* 3) BUY PANEL */}
       <section className="grid md:grid-cols-2 gap-8" id="buy">
-        {/* Left: пресейл параметри */}
+        {/* Ліва колонка — короткі параметри (без дублювань із Hero) */}
         <div className="card space-y-4">
           <div className="flex items-center justify-between pb-2 border border-0 border-b border-[var(--border)]/60">
             <h3 className="text-lg font-semibold">Параметри пресейлу</h3>
-            <span className="badge">Ціль: {TARGET_TON.toLocaleString("uk-UA")} TON</span>
+            <span className="badge">Ціль: {targetTon.toLocaleString("uk-UA")} TON</span>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 rounded-lg border border-[var(--border)]/60">
               <div className="subtle text-xs">Поточний рівень</div>
-              <div className="text-xl font-semibold">1</div>
+              <div className="text-xl font-semibold">{level}</div>
             </div>
             <div className="p-3 rounded-lg border border-[var(--border)]/60">
               <div className="subtle text-xs">Ціна (за 1 MAGT)</div>
               <div className="text-xl font-semibold">
-                {PRICE_TON_PER_MAGT.toLocaleString("uk-UA", { minimumFractionDigits: 6 })} TON
+                {price.toLocaleString("uk-UA", { minimumFractionDigits: 6 })} TON
               </div>
             </div>
             <div className="p-3 rounded-lg border border-[var(--border)]/60">
               <div className="subtle text-xs">Залишок</div>
-              <div className="text-xl font-semibold">— MAGT</div>
+              <div className="text-xl font-semibold">
+                {leftOnLevel ? leftOnLevel.toLocaleString("uk-UA") : "—"} MAGT
+              </div>
             </div>
           </div>
 
           <div className="subtle text-sm">Прогрес збору</div>
-          <div className="progress"><span /></div>
-          <div className="subtle text-xs">— / {TARGET_TON.toLocaleString("uk-UA")} TON</div>
-        </div>
-
-        {/* Right: покупка */}
-        <div className="card space-y-4">
-          <div className="flex items-center justify-between pb-1">
-            <h3 className="text-lg font-semibold">Купити MAGT за TON</h3>
-            <span className="badge">Реферальна програма — 5% <small className="subtle">(Beta)</small></span>
-          </div>
-
-          <label className="subtle text-sm">Реферальний адрес (необов’язково)</label>
-          <input
-            className="input"
-            placeholder="EQ... (адрес друга у TON)"
-            value={referral}
-            onChange={(e) => setReferral(e.target.value.trim())}
-          />
-
-          <label className="subtle text-sm">Сума у TON</label>
-          <div className="flex items-center gap-3">
-            <input
-              type="number"
-              min="0.1"
-              step="0.01"
-              value={amountTON}
-              onChange={(e) => setAmountTON(e.target.value)}
-              className="input"
-              placeholder="100"
-            />
-            <button
-              className="btn"
-              onClick={() => setAmountTON("100")}
-              type="button"
-            >
-              MAX
-            </button>
-          </div>
-
-          <div className="subtle text-sm">Отримаєш ≈ <b>{magtPreview}</b> MAGT</div>
-
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={agree}
-              onChange={(e) => setAgree(e.target.checked)}
-            />
-            Погоджуюсь з правилами пресейлу (безпека, блокування, обмеження)
-          </label>
-
-          <button
-            className="btn btn-primary"
-            onClick={handleBuy}
-            disabled={!connected || !agree}
+          <div
+            className="progress"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Number(progressPct.toFixed(2))}
           >
-            Купити
-          </button>
-
+            <span style={{ width: `${progressPct}%` }} />
+          </div>
           <div className="subtle text-xs">
-            Адреса сейлу: <code className="opacity-90">{SALE_ADDRESS || "-"}</code>
+            {raisedTon.toLocaleString("uk-UA")} / {targetTon.toLocaleString("uk-UA")} TON
           </div>
         </div>
+
+        {/* Права колонка — повний компонент покупки з калькулятором і TonConnect */}
+        <BuyPanel
+          priceTonPerMagt={price || PRICE_TON_PER_MAGT_FALLBACK}
+          gasHintMin={GAS_HINT_MIN}
+          gasHintMax={GAS_HINT_MAX}
+          saleAddress={SALE_ADDRESS}
+        />
       </section>
 
-      {/* Wallet/alloc */}
-      <section className="card space-y-3">
-        <h3 className="text-lg font-semibold">Стан гаманця</h3>
-        <div className="grid md:grid-cols-3 gap-3">
-          <div>
-            <div className="subtle text-xs">Статус</div>
-            <div className="text-base">{connected ? "Підключено" : "Відключено"}</div>
-          </div>
-          <div className="md:col-span-2 break-all">
-            <div className="subtle text-xs">Адреса</div>
-            <div className="text-base">{userAddr || "-"}</div>
-          </div>
-        </div>
-        <div>
-          <div className="subtle text-xs">Твій алокейт (MAGT)</div>
-          <div className="text-base">{formatAmount(alloc, DECIMALS)}</div>
-        </div>
-        <div className="flex gap-2 pt-1">
-          <button className="btn" onClick={refreshAlloc} disabled={!connected || loading}>
-            Оновити розподілення
-          </button>
-        </div>
-      </section>
+      {/* 4) Чому ми */}
+      <ValueProps />
 
-      {/* Tokenomics */}
-      <section id="token" className="card space-y-3">
-        <h3 className="text-lg font-semibold">Токеноміка (скорочено)</h3>
-        <div className="grid md:grid-cols-4 gap-3 text-sm">
-          <div className="p-3 rounded-lg border border-[var(--border)]/60">
-            <div className="subtle text-xs">Всього</div>
-            <div className="text-base font-semibold">10 000 000 000 MAGT</div>
-          </div>
-          <div className="p-3 rounded-lg border border-[var(--border)]/60">
-            <div className="subtle text-xs">Пресейл</div>
-            <div className="text-base font-semibold">TBA</div>
-          </div>
-          <div className="p-3 rounded-lg border border-[var(--border)]/60">
-            <div className="subtle text-xs">Ліквідність</div>
-            <div className="text-base font-semibold">TBA</div>
-          </div>
-          <div className="p-3 rounded-lg border border-[var(--border)]/60">
-            <div className="subtle text-xs">Резерв</div>
-            <div className="text-base font-semibold">TBA</div>
-          </div>
-        </div>
-        <p className="subtle text-sm">Детальні діаграми та вестинг додамо після фіналізації параметрів рівнів.</p>
-      </section>
+      {/* 5) Токеноміка */}
+      <Tokenomics />
 
-      {/* FAQ */}
+      {/* 6) Roadmap */}
+      <Roadmap />
+
+      {/* 7) FAQ */}
       <section id="faq" className="card space-y-4">
         <h3 className="text-lg font-semibold">FAQ</h3>
+
         <details className="rounded-lg border border-[var(--border)]/60 p-4">
           <summary className="font-medium cursor-pointer">Токени не прийшли — що робити?</summary>
           <p className="subtle text-sm mt-2">
@@ -307,13 +283,28 @@ export default function Page() {
             Якщо що — напиши нам із хешем транзакції.
           </p>
         </details>
+
         <details className="rounded-lg border border-[var(--border)]/60 p-4">
           <summary className="font-medium cursor-pointer">Чи є мінімальна сума?</summary>
           <p className="subtle text-sm mt-2">Так, 0.1 TON. Для першого тесту рекомендуємо 0.20 TON.</p>
         </details>
+
+        <details className="rounded-lg border border-[var(--border)]/60 p-4">
+          <summary className="font-medium cursor-pointer">Чи можна купити з біржі?</summary>
+          <p className="subtle text-sm mt-2">
+            Рекомендуємо купувати безпосередньо на цій сторінці пресейлу. Після лістингу на DEX з’являться торгові пули.
+          </p>
+        </details>
+
+        <details className="rounded-lg border border-[var(--border)]/60 p-4">
+          <summary className="font-medium cursor-pointer">Як працює реферальна програма?</summary>
+          <p className="subtle text-sm mt-2">
+            Вкажи адресу друга у полі «Реферальний адрес». Система нарахує 5% бонусів згідно з умовами програми.
+          </p>
+        </details>
       </section>
 
-      {/* Footer */}
+      {/* 8) Footer */}
       <footer className="pt-2 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div>© {new Date().getFullYear()} Magic Time. Усі права захищено.</div>
         <div className="flex gap-4">
