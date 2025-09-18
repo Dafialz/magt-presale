@@ -1,20 +1,29 @@
 // app/r/[ref]/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { ref: string } }) {
-  const ref = params.ref;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-  // Перенаправляємо на /api/ref?ref=... щоб записати cookie
-  const apiUrl = new URL(`${req.nextUrl.origin}/api/ref`);
-  apiUrl.searchParams.set("ref", ref);
+type RouteContext = { params: { ref: string } };
 
-  // Робимо бекенд-запит, щоб він встановив cookie
-  const res = await fetch(apiUrl, { cache: "no-store" });
+export async function GET(req: Request, { params }: RouteContext) {
+  const ref = params?.ref ?? "";
 
-  // І потім перенаправляємо на головну сторінку
-  const redirect = NextResponse.redirect(new URL("/", req.url));
-  // перенесемо cookie з /api/ref у цей редірект
-  const setCookie = res.headers.get("set-cookie");
+  // Викликаємо бекенд-ендпоінт, щоб він встановив cookie
+  const apiUrl = new URL("/api/ref", new URL(req.url).origin);
+  if (ref) apiUrl.searchParams.set("ref", ref);
+
+  let setCookie: string | null = null;
+  try {
+    const res = await fetch(apiUrl.toString(), { cache: "no-store" });
+    setCookie = res.headers.get("set-cookie");
+  } catch {
+    // тихо падаємо — все одно редіректимо на головну
+  }
+
+  // Редірект на головну
+  const redirect = NextResponse.redirect(new URL("/", req.url), { status: 302 });
+  redirect.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
   if (setCookie) redirect.headers.set("set-cookie", setCookie);
 
   return redirect;
