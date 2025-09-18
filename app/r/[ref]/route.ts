@@ -4,11 +4,10 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function GET(
-  req: Request,
-  context: { params: Record<string, string> }
-) {
-  const ref = context.params?.ref ?? "";
+export async function GET(req: Request, context: unknown) {
+  // безпечне приведення типу для params
+  const params = (context as { params?: { ref?: string } })?.params;
+  const ref = params?.ref ?? "";
 
   // Викликаємо бекенд-ендпоінт, щоб він встановив cookie
   const origin = new URL(req.url).origin;
