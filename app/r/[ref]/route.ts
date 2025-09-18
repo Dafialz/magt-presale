@@ -6,11 +6,11 @@ export const revalidate = 0;
 
 export async function GET(
   req: Request,
-  { params }: { params: { ref: string } }
+  context: { params: Record<string, string> }
 ) {
-  const ref = params?.ref ?? "";
+  const ref = context.params?.ref ?? "";
 
-  // викликаємо бекенд-ендпоінт, щоб він встановив cookie
+  // Викликаємо бекенд-ендпоінт, щоб він встановив cookie
   const origin = new URL(req.url).origin;
   const apiUrl = new URL("/api/ref", origin);
   if (ref) apiUrl.searchParams.set("ref", ref);
@@ -23,7 +23,7 @@ export async function GET(
     // тихо ігноруємо — все одно редіректимо на головну
   }
 
-  // редірект на головну
+  // Редірект на головну
   const redirect = NextResponse.redirect(new URL("/", req.url), { status: 302 });
   redirect.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
   if (setCookie) redirect.headers.set("set-cookie", setCookie);
