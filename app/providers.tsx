@@ -2,16 +2,16 @@
 "use client";
 
 import { TonConnectUIProvider, THEME } from "@tonconnect/ui-react";
-import React from "react";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  // Абсолютний URL маніфеста: з ENV або з поточного origin
+  // Абсолютний URL маніфеста
   const origin =
     typeof window !== "undefined" ? window.location.origin : "https://magtcoin.com";
   const base = (process.env.NEXT_PUBLIC_SITE_URL || origin).replace(/\/$/, "");
   const manifestUrl = `${base}/tonconnect-manifest.json`;
 
-  // Вайтліст стабільних гаманців (обхід типів 2.3.x — у рантаймі працює коректно)
+  // У 2.3.x типи очікують інший формат; у рантаймі SDK приймає рядкові ID.
+  // Даємо будь-який тип, щоб TS не лаявся.
   const walletsListConfiguration: any = {
     includeWallets: ["tonkeeper", "mytonwallet", "tonhub"],
   };
@@ -19,7 +19,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <TonConnectUIProvider
       manifestUrl={manifestUrl}
-      // у d.ts для 2.3.x це проп може бути відсутній, але SDK його підтримує
       walletsListConfiguration={walletsListConfiguration}
       uiPreferences={{ theme: THEME.DARK }}
     >
