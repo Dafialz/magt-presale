@@ -1,7 +1,6 @@
 // app/page.tsx
 "use client";
 
-import Image from "next/image";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { TonConnectButton } from "@tonconnect/ui-react";
 import toast from "react-hot-toast";
@@ -31,12 +30,10 @@ type SaleApiResp =
 
 /* ========= ENV / CONST ========= */
 const SALE_ADDRESS = process.env.NEXT_PUBLIC_SALE_ADDRESS || ""; // EQ...
-const PRICE_TON_PER_MAGT_FALLBACK = 0.00383; // fallback, поки не прийшли дані з /api/sale
+const PRICE_TON_PER_MAGT_FALLBACK = 0.00383;
 const TARGET_TON_FALLBACK = 6_500_000;
 const GAS_HINT_MIN = 0.05;
 const GAS_HINT_MAX = 0.1;
-
-// інтервал автооновлення (винести у .env як NEXT_PUBLIC_SALE_REFRESH_MS за бажанням)
 const REFRESH_MS = Number(process.env.NEXT_PUBLIC_SALE_REFRESH_MS || 20000);
 
 /* ========= Utils ========= */
@@ -45,23 +42,19 @@ function isAbortError(err: unknown): boolean {
 }
 
 export default function Page() {
-  // ===== Дані сейлу (динаміка через /api/sale) =====
   const [raisedTon, setRaisedTon] = useState<number>(0);
   const [targetTon, setTargetTon] = useState<number>(TARGET_TON_FALLBACK);
   const [level, setLevel] = useState<number>(1);
   const [price, setPrice] = useState<number>(PRICE_TON_PER_MAGT_FALLBACK);
   const [leftOnLevel, setLeftOnLevel] = useState<number>(0);
 
-  // автооновлення з AbortController + пауза у фоновому режимі
   const pollTimerRef = useRef<number | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
   const lastToastAtRef = useRef<number>(0);
 
   const fetchSaleOnce = useCallback(async () => {
-    // якщо вкладка неактивна — пропускаємо (економія)
     if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
 
-    // скасовуємо попередній запит, якщо ще триває
     controllerRef.current?.abort();
     const ctrl = new AbortController();
     controllerRef.current = ctrl;
@@ -77,7 +70,6 @@ export default function Page() {
         setPrice(d.priceTonPerToken ?? PRICE_TON_PER_MAGT_FALLBACK);
         setLeftOnLevel(d.leftOnLevel ?? 0);
       } else {
-        // показуємо toast не частіше, ніж раз на 60с
         const now = Date.now();
         if (now - lastToastAtRef.current > 60_000) {
           toast.error(j?.error || "Не вдалося завантажити дані сейлу");
@@ -96,11 +88,8 @@ export default function Page() {
 
   useEffect(() => {
     let mounted = true;
-
-    // перший фетч одразу
     fetchSaleOnce();
 
-    // інтервал оновлення
     function startPolling() {
       if (!mounted) return;
       if (pollTimerRef.current) window.clearInterval(pollTimerRef.current);
@@ -113,10 +102,9 @@ export default function Page() {
       }
     }
 
-    // пауза/ресюм при зміні видимості
     const onVis = () => {
       if (document.visibilityState === "visible") {
-        fetchSaleOnce(); // миттєво підтягнути свіжі дані
+        fetchSaleOnce();
         startPolling();
       } else {
         stopPolling();
@@ -142,7 +130,6 @@ export default function Page() {
 
   return (
     <main className="container space-y-10">
-      {/* 1) HEADER */}
       <HeaderBar>
         <nav className="flex items-center gap-3">
           <a className="subtle hidden md:inline-block" href="#buy">Купити</a>
@@ -155,23 +142,15 @@ export default function Page() {
         </nav>
       </HeaderBar>
 
-      {/* 2) HERO */}
       <HeroSection
         targetTon={targetTon}
         raisedTon={raisedTon}
         progressPct={progressPct}
         actionLeft={<a href="#buy" className="btn btn-primary">Купити зараз</a>}
         actionRight={<a href="/whitepaper.pdf" className="btn" target="_blank" rel="noreferrer">Whitepaper</a>}
-        media={
-          <div className="card p-6">
-            <Image src="/bg.png" alt="Magic Time" width={800} height={480} className="rounded-2xl" />
-          </div>
-        }
       />
 
-      {/* 3) BUY PANEL */}
       <section className="grid md:grid-cols-2 gap-8" id="buy">
-        {/* Ліва колонка — короткі параметри */}
         <div className="card space-y-4">
           <div className="flex items-center justify-between pb-2 border border-0 border-b border-[var(--border)]/60">
             <h3 className="text-lg font-semibold">Параметри пресейлу</h3>
@@ -198,13 +177,7 @@ export default function Page() {
           </div>
 
           <div className="subtle text-sm">Прогрес збору</div>
-          <div
-            className="progress"
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Number(progressPct.toFixed(2))}
-          >
+          <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Number(progressPct.toFixed(2))}>
             <span style={{ width: `${progressPct}%` }} />
           </div>
           <div className="subtle text-xs">
@@ -212,7 +185,6 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Права колонка — покупка */}
         <BuyPanel
           priceTonPerMagt={price || PRICE_TON_PER_MAGT_FALLBACK}
           gasHintMin={GAS_HINT_MIN}
@@ -221,19 +193,12 @@ export default function Page() {
         />
       </section>
 
-      {/* 4) Чому ми */}
       <ValueProps />
-
-      {/* 5) Токеноміка */}
       <Tokenomics />
-
-      {/* 6) Roadmap */}
       <Roadmap />
 
-      {/* 7) FAQ */}
       <section id="faq" className="card space-y-4">
         <h3 className="text-lg font-semibold">FAQ</h3>
-
         <details className="rounded-lg border border-[var(--border)]/60 p-4">
           <summary className="font-medium cursor-pointer">Токени не прийшли — що робити?</summary>
           <p className="subtle text-sm mt-2">
@@ -241,19 +206,16 @@ export default function Page() {
             Якщо що — напиши нам із хешем транзакції.
           </p>
         </details>
-
         <details className="rounded-lg border border-[var(--border)]/60 p-4">
           <summary className="font-medium cursor-pointer">Чи є мінімальна сума?</summary>
           <p className="subtle text-sm mt-2">Так, 0.1 TON. Для першого тесту рекомендуємо 0.20 TON.</p>
         </details>
-
         <details className="rounded-lg border border-[var(--border)]/60 p-4">
           <summary className="font-medium cursor-pointer">Чи можна купити з біржі?</summary>
           <p className="subtle text-sm mt-2">
             Рекомендуємо купувати безпосередньо на цій сторінці пресейлу. Після лістингу на DEX з’являться торгові пули.
           </p>
         </details>
-
         <details className="rounded-lg border border-[var(--border)]/60 p-4">
           <summary className="font-medium cursor-pointer">Як працює реферальна програма?</summary>
           <p className="subtle text-sm mt-2">
@@ -262,8 +224,7 @@ export default function Page() {
         </details>
       </section>
 
-      {/* 8) Footer */}
-      <footer className="pt-2 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      <footer className="pt-2 pb-8 flex flex-col md:flex-row items-start md:items-center justify_between gap-3">
         <div>© {new Date().getFullYear()} Magic Time. Усі права захищено.</div>
         <div className="flex gap-4">
           <a className="hover:underline" href="https://t.me/" target="_blank" rel="noreferrer">Telegram</a>
