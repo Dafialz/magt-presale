@@ -1,5 +1,7 @@
 {
   "url": "https://magtcoin.com",
   "name": "MAGT Presale",
-  "iconUrl": "https://magtcoin.com/logo.png"
+  "iconUrl": "https://magtcoin.com/logo.png",
+  "termsOfUseUrl": "https://magtcoin.com/terms",
+  "privacyPolicyUrl": "https://magtcoin.com/privacy"
 }
