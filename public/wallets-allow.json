@@ -5,12 +5,9 @@
     "about_url": "https://tonkeeper.com",
     "universal_url": "https://app.tonkeeper.com/ton-connect",
     "bridge": [
-      {
-        "type": "sse",
-        "url": "https://bridge.tonapi.io/bridge"
-      }
+      { "type": "sse", "url": "https://bridge.tonapi.io/bridge" }
     ],
-    "image": "https://magtcoin.com/logo.png" 
+    "image": "https://raw.githubusercontent.com/ton-connect/wallets-list/master/assets/tonkeeper/icon.png"
   },
   {
     "app_name": "mytonwallet",
@@ -18,10 +15,7 @@
     "about_url": "https://mytonwallet.org",
     "universal_url": "https://mytonwallet.org/ton-connect",
     "bridge": [
-      {
-        "type": "sse",
-        "url": "https://tonconnect.mytonwallet.org/bridge"
-      }
+      { "type": "sse", "url": "https://tonconnect.mytonwallet.org/bridge" }
     ],
     "image": "https://raw.githubusercontent.com/ton-connect/wallets-list/master/assets/mytonwallet/icon.png"
   },
@@ -31,10 +25,7 @@
     "about_url": "https://tonhub.com",
     "universal_url": "https://tonhub.com/ton-connect",
     "bridge": [
-      {
-        "type": "sse",
-        "url": "https://connect.tonhubapi.com/bridge"
-      }
+      { "type": "sse", "url": "https://connect.tonhubapi.com/bridge" }
     ],
     "image": "https://raw.githubusercontent.com/ton-connect/wallets-list/master/assets/tonhub/icon.png"
   }
