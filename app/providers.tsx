@@ -3,7 +3,8 @@
 
 import { TonConnectUIProvider, THEME } from "@tonconnect/ui-react";
 
-const EXCLUDED = ["blitzwallet"] as const;
+// Локальний список (public/wallets-allow.json)
+const WALLETS_LIST_SOURCE = "/wallets-allow.json";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   // Абсолютний URL маніфеста
@@ -12,15 +13,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || origin).replace(/\/$/, "");
   const manifestUrl = `${base}/tonconnect-manifest.json`;
 
-  // Обходимо «дірку» в d.ts 2.3.x без any і без ts-ignore:
-  // формуємо значення як unknown і приводимо до потрібного типу при передачі.
-  const walletsListConfiguration = { excludeWallets: EXCLUDED } as unknown;
-
   return (
     <TonConnectUIProvider
       manifestUrl={manifestUrl}
-      // d.ts у 2.3.x може не мати цього поля, але рантайм SDK його підтримує
-      walletsListConfiguration={walletsListConfiguration as never}
+      // Використовуємо локальний список дозволених гаманців
+      // (Tonkeeper, MyTonWallet, Tonhub)
+      // @ts-expect-error: типи SDK 2.3.x не включають walletsListSource, але в рантаймі працює
+      walletsListSource={WALLETS_LIST_SOURCE}
       uiPreferences={{ theme: THEME.DARK }}
     >
       {children}
