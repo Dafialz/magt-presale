@@ -10,6 +10,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || origin).replace(/\/$/, "");
   const manifestUrl = `${base}/tonconnect-manifest.json`;
 
+  // У @tonconnect/ui-react 2.3.x НЕ передаємо walletsListConfiguration з рядками.
   return (
     <TonConnectUIProvider
       manifestUrl={manifestUrl}
