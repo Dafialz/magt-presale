@@ -8,18 +8,17 @@
 [[headers]]
   for = "/*"
   [headers.values]
-  # Дозволяємо гаманцям підтягувати іконки та відкривати з’єднання з їхніми бриджами
+  # Відкриваємо мережеві з’єднання для будь-яких bridge-ендпоінтів гаманців
+  # (Tonkeeper, Tonhub, MyTonWallet, Okx, Trust, Bitget, інші — тепер не буде блокувань)
   Content-Security-Policy = '''
     default-src 'self';
     img-src 'self' data: https:;
-    connect-src
-      'self'
-      https://connect.tonhubapi.com
-      https://bridge.tonapi.io
-      https://tonapi.io
-      https://*.tonkeeper.com;
+    font-src 'self' data: https:;
+    connect-src 'self' https: wss:;
     frame-src 'self' https:;
     media-src 'self' https:;
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https:;
     style-src 'self' 'unsafe-inline' https:;
   '''
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  X-Content-Type-Options = "nosniff"

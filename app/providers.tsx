@@ -3,9 +3,6 @@
 
 import { TonConnectUIProvider, THEME } from "@tonconnect/ui-react";
 
-// Локальний список (public/wallets-allow.json)
-const WALLETS_LIST_SOURCE = "/wallets-allow.json";
-
 export default function Providers({ children }: { children: React.ReactNode }) {
   // Абсолютний URL маніфеста
   const origin =
@@ -16,10 +13,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <TonConnectUIProvider
       manifestUrl={manifestUrl}
-      // Використовуємо локальний список дозволених гаманців
-      // (Tonkeeper, MyTonWallet, Tonhub)
-      // @ts-expect-error: типи SDK 2.3.x не включають walletsListSource, але в рантаймі працює
-      walletsListSource={WALLETS_LIST_SOURCE}
       uiPreferences={{ theme: THEME.DARK }}
     >
       {children}
