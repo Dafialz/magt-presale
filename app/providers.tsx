@@ -3,29 +3,33 @@
 
 import { TonConnectUIProvider, THEME } from "@tonconnect/ui-react";
 
-const ALLOWED_IDS = ["tonkeeper", "mytonwallet", "tonhub"] as const;
+// Дозволяємо тільки ці гаманці
+const ALLOWED_IDS: string[] = ["tonkeeper", "mytonwallet", "tonhub"];
 
-// Невеликий «білий» список (тільки 3 гаманці). Решта просто не потраплять у модалку й
-// SDK не буде тягнути їхні логотипи/бріджі.
-const walletsListSource =
+// “Білий” список джерела — SDK не тягнутиме інші гаманці/бріджі
+const WALLETS_LIST_SOURCE =
   "https://raw.githubusercontent.com/ton-connect/wallets-list/master/wallets.json?only=tonkeeper,mytonwallet,tonhub";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
+  // Абсолютний URL маніфеста
   const origin =
     typeof window !== "undefined" ? window.location.origin : "https://magtcoin.com";
   const base = (process.env.NEXT_PUBLIC_SITE_URL || origin).replace(/\/$/, "");
   const manifestUrl = `${base}/tonconnect-manifest.json`;
 
+  // Обходимо різницю в типах 2.3.x: прокидаємо пропи через об’єкт any
+  const compatProps: any = {
+    walletsListConfiguration: {
+      includeWallets: ALLOWED_IDS,
+      excludeWallets: ["blitzwallet"],
+    },
+    walletsListSource: WALLETS_LIST_SOURCE,
+  };
+
   return (
     <TonConnectUIProvider
       manifestUrl={manifestUrl}
-      // @ts-expect-error: проп є у рантаймі, типи 2.3.x його ще можуть не знати
-      walletsListConfiguration={{
-        includeWallets: ALLOWED_IDS,
-        excludeWallets: ["blitzwallet"],
-      }}
-      // @ts-expect-error: те саме — у рантаймі працює
-      walletsListSource={walletsListSource}
+      {...compatProps}
       uiPreferences={{ theme: THEME.DARK }}
     >
       {children}
