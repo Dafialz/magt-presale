@@ -83,7 +83,7 @@ export default function App() {
 
         {/* CALCULATOR */}
         <div className="mt-8">
-          <TonToMagtCalculator currentRound={currentRound} tonUsdRate={tonUsdRate} />
+          <TonToMagtCalculator currentRound={currentRound} />
         </div>
 
         {/* BUY */}

@@ -5,15 +5,13 @@ import { priceUsd } from "../lib/presale";
 
 export function TonToMagtCalculator({
   currentRound,
-  tonUsdRate,
 }: {
   currentRound: number; // 0..19
-  tonUsdRate: number;   // наприклад 6.5 (1 TON = 6.5 USD)
 }) {
-  const [ton, setTon] = React.useState("1");
+  const [usdt, setUsdt] = React.useState("50");
 
-  const tonNum = toNumberSafe(ton);
-  const usd = Math.max(0, tonNum) * (tonUsdRate || 0);
+  const usdtNum = toNumberSafe(usdt);
+  const usd = Math.max(0, usdtNum); // USDT ≈ USD
   const tokenPrice = priceUsd(currentRound); // USD per MAGT
   const magt = tokenPrice > 0 ? usd / tokenPrice : 0;
 
@@ -23,7 +21,7 @@ export function TonToMagtCalculator({
         <div>
           <div className="text-lg font-semibold">Calculator</div>
           <div className="mt-1 text-sm text-zinc-400">
-            TON → MAGT using current round price
+            USDT → MAGT using current round price
           </div>
         </div>
 
@@ -38,19 +36,21 @@ export function TonToMagtCalculator({
       <div className="mt-5 grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-4">
           <div className="text-xs text-zinc-400">You pay</div>
-          <div className="mt-1 text-sm font-semibold">TON</div>
+          <div className="mt-1 text-sm font-semibold">USDT</div>
+
           <input
-            value={ton}
-            onChange={(e) => setTon(clampNum(e.target.value, 4))}
+            value={usdt}
+            onChange={(e) => setUsdt(clampNum(e.target.value, 2))}
             className="mt-3 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 outline-none focus:border-zinc-600"
             inputMode="decimal"
-            placeholder="0.0"
+            placeholder="0.00"
           />
 
-          <div className="mt-3 flex gap-2">
-            <QuickBtn onClick={() => setTon("1")}>1</QuickBtn>
-            <QuickBtn onClick={() => setTon("5")}>5</QuickBtn>
-            <QuickBtn onClick={() => setTon("10")}>10</QuickBtn>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <QuickBtn onClick={() => setUsdt("50")}>50</QuickBtn>
+            <QuickBtn onClick={() => setUsdt("100")}>100</QuickBtn>
+            <QuickBtn onClick={() => setUsdt("250")}>250</QuickBtn>
+            <QuickBtn onClick={() => setUsdt("500")}>500</QuickBtn>
           </div>
         </div>
 
@@ -61,7 +61,7 @@ export function TonToMagtCalculator({
             ${usd.toFixed(2)}
           </div>
           <div className="mt-2 text-xs text-zinc-400">
-            Rate: 1 TON ≈ ${tonUsdRate.toFixed(2)}
+            USDT is treated as USD (1:1)
           </div>
         </div>
 
