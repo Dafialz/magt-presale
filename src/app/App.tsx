@@ -23,7 +23,6 @@ export default function App() {
   const currentRound = 0; // 0..19
   const soldTotal = 128_500_000; // всього продано
   const soldInRound = 12_300_000; // продано в поточному раунді
-  const tonUsdRate = 6.5; // 1 TON ≈ $6.5
 
   return (
     <div className="min-h-screen">
@@ -81,7 +80,7 @@ export default function App() {
           />
         </div>
 
-        {/* CALCULATOR */}
+        {/* CALCULATOR (USDT -> MAGT) */}
         <div className="mt-8">
           <TonToMagtCalculator currentRound={currentRound} />
         </div>
