@@ -2,12 +2,23 @@ import { Header } from "../components/Header";
 import { PresaleWidget } from "../components/PresaleWidget";
 import { PresaleProgress } from "../components/PresaleProgress";
 import { TonToMagtCalculator } from "../components/TonToMagtCalculator";
+import { TrustSection } from "../components/TrustSection";
+import { Tokenomics } from "../components/Tokenomics";
+import { Roadmap } from "../components/Roadmap";
+import { FAQ } from "../components/FAQ";
+import { SiteFooter } from "../components/SiteFooter";
+import { ReferralButton } from "../components/ReferralButton";
+import { useLang } from "../components/LangSwitcher";
+import { useTonAddress } from "@tonconnect/ui-react";
 
 import logo from "../assets/favicon.png";
 import hero from "../assets/og-600x315.png";
 import bg from "../assets/bg.png";
 
 export default function App() {
+  const { lang, setLang } = useLang();
+  const addr = useTonAddress();
+
   // 🔧 DEMO-СТАНИ (потім заміниш на бекенд)
   const currentRound = 0; // 0..19
   const soldTotal = 128_500_000; // всього продано
@@ -27,7 +38,7 @@ export default function App() {
       />
       <div className="fixed inset-0 -z-10 bg-zinc-950/70" />
 
-      <Header />
+      <Header lang={lang} onLangChange={setLang} />
 
       <main className="mx-auto max-w-6xl px-4 py-8">
         {/* HERO */}
@@ -50,6 +61,10 @@ export default function App() {
               <Badge label="Pay" value="TON / USDT" />
               <Badge label="Token" value="MAGT" />
             </div>
+
+            <div className="mt-5">
+              <ReferralButton lang={lang} address={addr} />
+            </div>
           </div>
 
           <div className="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-3">
@@ -68,20 +83,25 @@ export default function App() {
 
         {/* CALCULATOR */}
         <div className="mt-8">
-          <TonToMagtCalculator
-            currentRound={currentRound}
-            tonUsdRate={tonUsdRate}
-          />
+          <TonToMagtCalculator currentRound={currentRound} tonUsdRate={tonUsdRate} />
         </div>
 
-        {/* BUY WIDGET */}
+        {/* BUY */}
         <div className="mt-8">
           <PresaleWidget />
         </div>
 
-        <footer className="mt-12 text-xs text-zinc-500">
-          © {new Date().getFullYear()} MAGIC TIME
-        </footer>
+        {/* TRUST + TOKENOMICS + ROADMAP + FAQ */}
+        <div className="mt-10 grid gap-8">
+          <TrustSection lang={lang} />
+          <Tokenomics lang={lang} />
+          <Roadmap lang={lang} />
+          <FAQ lang={lang} />
+        </div>
+
+        <div className="mt-10">
+          <SiteFooter />
+        </div>
       </main>
     </div>
   );
