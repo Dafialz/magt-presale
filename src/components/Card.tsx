@@ -1,18 +1,25 @@
 import React from "react";
 
-export function Card({ children }: { children: React.ReactNode }) {
+export function Card({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <section
-      className="
-        group relative overflow-hidden rounded-3xl
-        border border-white/10
-        bg-black/45 p-6
-        backdrop-blur-md
-        shadow-[0_12px_50px_rgba(0,0,0,0.45)]
-        transition-all duration-300
-        hover:border-cyan-400/40
-        hover:shadow-[0_20px_80px_rgba(80,180,255,0.25)]
-      "
+      className={[
+        "group relative overflow-hidden rounded-3xl",
+        "border border-white/10",
+        "bg-black/45 p-6",
+        "backdrop-blur-md",
+        "shadow-[0_12px_50px_rgba(0,0,0,0.45)]",
+        "transition-all duration-300",
+        "hover:border-cyan-400/40",
+        "hover:shadow-[0_20px_80px_rgba(80,180,255,0.25)]",
+        className,
+      ].join(" ")}
     >
       {/* ✨ NEON GLOW */}
       <div className="pointer-events-none absolute inset-0">
