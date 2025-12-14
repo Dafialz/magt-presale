@@ -10,6 +10,7 @@ import { SiteFooter } from "../components/SiteFooter";
 import { ReferralButton } from "../components/ReferralButton";
 import { useLang } from "../components/LangSwitcher";
 import { useTonAddress } from "@tonconnect/ui-react";
+import { ProjectsSection } from "../components/ProjectsSection";
 
 import logo from "../assets/favicon.png";
 import hero from "../assets/og-600x315.png";
@@ -23,6 +24,10 @@ export default function App() {
   const currentRound = 0; // 0..19
   const soldTotal = 128_500_000; // всього продано
   const soldInRound = 12_300_000; // продано в поточному раунді
+
+  // 🔧 DEMO: скільки вже зібрано в $
+  // Потім просто заміниш на дані з бекенду
+  const raisedUsd = 1_250_000; // приклад: $1.25M
 
   return (
     <div className="min-h-screen">
@@ -88,6 +93,11 @@ export default function App() {
         {/* BUY */}
         <div className="mt-8">
           <PresaleWidget />
+        </div>
+
+        {/* PROJECTS */}
+        <div className="mt-10">
+          <ProjectsSection raisedUsd={raisedUsd} />
         </div>
 
         {/* TRUST + TOKENOMICS + ROADMAP + FAQ */}
