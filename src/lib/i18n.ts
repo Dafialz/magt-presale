@@ -1,32 +1,45 @@
+// 🔹 ІМПОРТИ ПРАПОРІВ (Vite way — працює і локально, і на Netlify)
+import flagBD from "../assets/lang/bd.png";
+import flagCN from "../assets/lang/cn.png";
+import flagEN from "../assets/lang/en.png";
+import flagES from "../assets/lang/es.png";
+import flagFR from "../assets/lang/fr.png";
+import flagID from "../assets/lang/id.png";
+import flagIN from "../assets/lang/in.png";
+import flagPT from "../assets/lang/pt.png";
+import flagRU from "../assets/lang/ru.png";
+import flagSA from "../assets/lang/sa.png";
+import flagUK from "../assets/lang/uk.png";
+
 export const LANGS = [
-  { code: "en", label: "EN" }, // English
-  { code: "uk", label: "UA" }, // Ukrainian
-  { code: "ru", label: "RU" }, // Russian
-  { code: "es", label: "ES" }, // Spanish
-  { code: "fr", label: "FR" }, // French
-  { code: "pt", label: "PT" }, // Portuguese
-  { code: "cn", label: "CN" }, // Chinese
-  { code: "in", label: "IN" }, // India (Hindi)
-  { code: "id", label: "ID" }, // Indonesian
-  { code: "sa", label: "SA" }, // Arabic (Saudi)
-  { code: "bd", label: "BD" }, // Bengali (Bangladesh)
+  { code: "en", label: "EN" },
+  { code: "uk", label: "UA" },
+  { code: "ru", label: "RU" },
+  { code: "es", label: "ES" },
+  { code: "fr", label: "FR" },
+  { code: "pt", label: "PT" },
+  { code: "cn", label: "CN" },
+  { code: "in", label: "IN" },
+  { code: "id", label: "ID" },
+  { code: "sa", label: "SA" },
+  { code: "bd", label: "BD" },
 ] as const;
 
 export type LangCode = (typeof LANGS)[number]["code"];
 
-// ✅ шлях до іконок прапорів (у тебе саме такі назви файлів)
+// ✅ ТЕПЕР ПРАПОРИ ПРАЦЮЮТЬ СКРІЗЬ
 export const FLAG_ICON: Record<LangCode, string> = {
-  en: "/src/assets/lang/en.png",
-  uk: "/src/assets/lang/uk.png",
-  ru: "/src/assets/lang/ru.png",
-  es: "/src/assets/lang/es.png",
-  fr: "/src/assets/lang/fr.png",
-  pt: "/src/assets/lang/pt.png",
-  cn: "/src/assets/lang/cn.png",
-  in: "/src/assets/lang/in.png",
-  id: "/src/assets/lang/id.png",
-  sa: "/src/assets/lang/sa.png",
-  bd: "/src/assets/lang/bd.png",
+  en: flagEN,
+  uk: flagUK,
+  ru: flagRU,
+  es: flagES,
+  fr: flagFR,
+  pt: flagPT,
+  cn: flagCN,
+  in: flagIN,
+  id: flagID,
+  sa: flagSA,
+  bd: flagBD,
 };
 
 const STORAGE_KEY = "magt_lang";
@@ -40,11 +53,8 @@ export function saveLang(code: LangCode) {
   localStorage.setItem(STORAGE_KEY, code);
 }
 
-/**
- * Мінімальний словник.
- * Для мов, які ти ще не переклав (cn/in/id/sa/bd) — тимчасово ставимо англійську,
- * щоб TypeScript був щасливий і сайт працював.
- */
+/* ====== DICTIONARY ====== */
+
 const EN = {
   trust_title: "Why trust us",
   tokenomics_title: "Tokenomics",
@@ -54,14 +64,12 @@ const EN = {
   copied: "Copied!",
   total_supply: "Total supply",
   presale: "Presale",
-  liquidity
-    : "Liquidity",
+  liquidity: "Liquidity",
   team: "Team",
   marketing: "Marketing",
   other: "Other projects",
 };
 
-// Мінімальний словник (ключові)
 export const DICT: Record<LangCode, Record<string, string>> = {
   en: EN,
 
@@ -140,7 +148,7 @@ export const DICT: Record<LangCode, Record<string, string>> = {
     other: "Outros projetos",
   },
 
-  // тимчасово англійською, доки не перекладеш
+  // ⏳ тимчасово EN
   cn: EN,
   in: EN,
   id: EN,
