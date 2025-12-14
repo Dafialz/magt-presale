@@ -13,7 +13,7 @@ import { useTonAddress } from "@tonconnect/ui-react";
 import { ProjectsSection } from "../components/ProjectsSection";
 
 import logo from "../assets/favicon.png";
-import neonLogo from "../assets/logo-presale.png"; // 🔥 НЕОНОВЕ ЛОГО
+import neonLogo from "../assets/logo-presale.png";
 import bg from "../assets/bg.png";
 
 export default function App() {
@@ -25,12 +25,12 @@ export default function App() {
   const soldTotal = 128_500_000;
   const soldInRound = 12_300_000;
 
-  // ✅ DEMO: скільки вже зібрали в USD (потім заміниш на бекенд/розрахунок)
-  const raisedUsd = 1_250_000; // приклад: $1.25M
+  // ✅ DEMO: Raised USD (потім заміниш на бекенд/розрахунок)
+  const raisedUsd = 1_250_000;
 
   return (
     <div className="min-h-screen text-white">
-      {/* 🌌 REAL BACKGROUND (без затемнення) */}
+      {/* 🌌 REAL BACKGROUND */}
       <div
         className="fixed inset-0 -z-10"
         style={{
@@ -48,14 +48,14 @@ export default function App() {
           <div>
             <div className="flex items-center gap-3">
               <img src={logo} className="h-10 w-10 rounded-xl" alt="logo" />
-              <div className="text-sm text-zinc-300">MAGIC TIME</div>
+              <div className="text-sm text-zinc-200">MAGIC TIME</div>
             </div>
 
             <h1 className="mt-4 text-4xl font-semibold leading-tight">
               MAGIC TIME Presale
             </h1>
 
-            <p className="mt-3 max-w-xl text-zinc-200">
+            <p className="mt-3 max-w-xl text-zinc-100">
               Купуй токени до лістингу. Обмежена кількість у кожному раунді.
             </p>
 
@@ -70,15 +70,12 @@ export default function App() {
             </div>
           </div>
 
-          {/* 🔮 НЕОНОВЕ ЛОГО ЗАМІСТЬ HERO */}
+          {/* LOGO */}
           <div className="flex justify-center">
             <img
               src={neonLogo}
               alt="MAGIC TIME Logo"
-              className="
-                max-w-sm w-full
-                drop-shadow-[0_0_40px_rgba(80,180,255,0.9)]
-              "
+              className="max-w-sm w-full drop-shadow-[0_0_45px_rgba(80,180,255,0.95)]"
             />
           </div>
         </div>
@@ -123,11 +120,25 @@ export default function App() {
   );
 }
 
+/**
+ * ✅ КРАЩЕ "GLASS" (читабельно на яскравому фоні):
+ * - темніше скло
+ * - менше blur (щоб не "мазало" текст)
+ * - тонка світла рамка + внутрішній glow
+ */
 function Badge({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/40 p-3 backdrop-blur">
-      <div className="text-xs text-zinc-400">{label}</div>
-      <div className="mt-1 font-semibold">{value}</div>
+    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/55 p-3 backdrop-blur-sm">
+      {/* subtle inner glow */}
+      <div className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="absolute -top-10 left-0 h-24 w-24 rounded-full bg-cyan-400/20 blur-2xl" />
+        <div className="absolute -bottom-10 right-0 h-24 w-24 rounded-full bg-purple-400/20 blur-2xl" />
+      </div>
+
+      <div className="relative">
+        <div className="text-xs text-zinc-300">{label}</div>
+        <div className="mt-1 font-semibold tracking-wide text-white">{value}</div>
+      </div>
     </div>
   );
 }
