@@ -28,6 +28,10 @@ export default function App() {
   // ✅ DEMO: Raised USD (потім заміниш на бекенд/розрахунок)
   const raisedUsd = 1_250_000;
 
+  // ✅ DEMO: Баланси (потім підтягнеш з бекенду/контракту)
+  const boughtMagt = 2_450_000.5; // скільки куплено MAGT
+  const referralMagt = 184_200.25; // скільки принесли реферали (MAGT)
+
   return (
     <div className="min-h-screen text-white">
       {/* 🌌 REAL BACKGROUND */}
@@ -67,6 +71,20 @@ export default function App() {
 
             <div className="mt-5">
               <ReferralButton lang={lang} address={addr} />
+            </div>
+
+            {/* ✅ ТУТ 2 БАЛАНСИ (як на твоєму скріні в червоній зоні) */}
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <BalanceCard
+                title="Your MAGT"
+                value={`${formatNum(boughtMagt)} MAGT`}
+                hint={addr ? "Connected wallet" : "Connect wallet to see"}
+              />
+              <BalanceCard
+                title="Referral MAGT"
+                value={`${formatNum(referralMagt)} MAGT`}
+                hint="Earned from referrals"
+              />
             </div>
           </div>
 
@@ -121,15 +139,11 @@ export default function App() {
 }
 
 /**
- * ✅ КРАЩЕ "GLASS" (читабельно на яскравому фоні):
- * - темніше скло
- * - менше blur (щоб не "мазало" текст)
- * - тонка світла рамка + внутрішній glow
+ * ✅ КРАЩЕ "GLASS" (читабельно на яскравому фоні)
  */
 function Badge({ label, value }: { label: string; value: string }) {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/55 p-3 backdrop-blur-sm">
-      {/* subtle inner glow */}
       <div className="pointer-events-none absolute inset-0 opacity-60">
         <div className="absolute -top-10 left-0 h-24 w-24 rounded-full bg-cyan-400/20 blur-2xl" />
         <div className="absolute -bottom-10 right-0 h-24 w-24 rounded-full bg-purple-400/20 blur-2xl" />
@@ -137,8 +151,46 @@ function Badge({ label, value }: { label: string; value: string }) {
 
       <div className="relative">
         <div className="text-xs text-zinc-300">{label}</div>
-        <div className="mt-1 font-semibold tracking-wide text-white">{value}</div>
+        <div className="mt-1 font-semibold tracking-wide text-white">
+          {value}
+        </div>
       </div>
     </div>
   );
+}
+
+function BalanceCard({
+  title,
+  value,
+  hint,
+}: {
+  title: string;
+  value: string;
+  hint?: string;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/55 p-4 backdrop-blur-sm">
+      <div className="pointer-events-none absolute inset-0 opacity-70">
+        <div className="absolute -top-10 -left-10 h-24 w-24 rounded-full bg-cyan-400/20 blur-2xl" />
+        <div className="absolute -bottom-10 -right-10 h-24 w-24 rounded-full bg-purple-400/20 blur-2xl" />
+      </div>
+
+      <div className="relative">
+        <div className="text-xs text-zinc-300">{title}</div>
+        <div className="mt-1 text-xl font-semibold tracking-wide">{value}</div>
+        {hint ? <div className="mt-1 text-xs text-zinc-400">{hint}</div> : null}
+      </div>
+    </div>
+  );
+}
+
+function formatNum(n: number) {
+  try {
+    if (!Number.isFinite(n)) return "0";
+    return new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 2,
+    }).format(n);
+  } catch {
+    return String(n);
+  }
 }
