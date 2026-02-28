@@ -2,7 +2,7 @@
 import { beginCell, toNano, Address, Cell } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
-import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
+import { loadEnv, envMaybeAddress, envMaybeStr, requireAddress } from "./env";
 import { CFG } from "./config";
 import { assertTestnet } from "./safety";
 import { patchTonConnectValidUntil } from "./tonconnect";
@@ -166,13 +166,12 @@ export async function run(provider: NetworkProvider) {
   assertTestnet(provider, "buy");
   loadEnv();
 
-  const presaleAddr =
+  const presaleAddr = requireAddress(
+    "PRESALE",
     envMaybeAddress("PRESALE_ADDRESS") ??
-    envMaybeAddress("PRESALE") ??
-    CFG.PRESALE;
-  if (!presaleAddr) {
-    throw new Error("Missing PRESALE address (set PRESALE_ADDRESS / PRESALE / PRESALE_CONTRACT)");
-  }
+      envMaybeAddress("PRESALE") ??
+      CFG.PRESALE
+  );
 
   const presale = provider.open(Presale.fromAddress(presaleAddr));
 

@@ -103,6 +103,13 @@ export function envMaybeAddress(key: string): Address | undefined {
   }
 }
 
+export function requireAddress(name: string, addr: Address | null | undefined): Address {
+  if (!addr) {
+    throw new Error(`Missing ${name}. Set ${name} in .env/.env.local`);
+  }
+  return addr;
+}
+
 export function envNanoFromTonStr(key: string, defTon?: string): bigint {
   const v = envStr(key, defTon);
   if (!v) throw new Error(`Missing env ${key}`);

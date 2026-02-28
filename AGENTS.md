@@ -120,14 +120,14 @@ I_UNDERSTAND_MAINNET=1 npx blueprint run deploy
 
 ## 10) Automated test commands
 
-Use these exact commands:
+Use these exact commands for fully automated local/CI checks (no wallet, no external RPC):
 
 ```bash
 npm ci
 npm run test:all
 ```
 
-For one-command testnet flow (wallet approval required):
+For one-command testnet flow (wallet approvals required):
 
 ```powershell
 $env:AMOUNT_TON="1.0"

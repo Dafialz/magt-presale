@@ -2,7 +2,7 @@
 import { Address, toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
-import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
+import { loadEnv, envMaybeAddress, envMaybeStr, requireAddress } from "./env";
 import { CFG } from "./config";
 import { assertTestnet } from "./safety";
 
@@ -10,17 +10,17 @@ export async function run(provider: NetworkProvider) {
   assertTestnet(provider, "resolvePending");
   loadEnv();
 
-  const presaleAddr =
+  const presaleAddr = requireAddress(
+    "PRESALE",
     envMaybeAddress("PRESALE_ADDRESS") ??
-    envMaybeAddress("PRESALE") ??
-    CFG.PRESALE;
-  if (!presaleAddr) throw new Error("Missing PRESALE address (PRESALE_ADDRESS or PRESALE)");
+      envMaybeAddress("PRESALE") ??
+      CFG.PRESALE
+  );
 
   const connected = provider.sender().address;
   if (!connected) throw new Error("Provider sender address is not available");
 
-  const owner = envMaybeAddress("OWNER") ?? CFG.OWNER;
-  if (!owner) throw new Error("OWNER is missing in .env (OWNER=...)");
+  const owner = requireAddress("OWNER", envMaybeAddress("OWNER") ?? CFG.OWNER);
 
   // owner check on client side (avoid wasting fees)
   if (connected.toRawString() !== owner.toRawString()) {
@@ -29,12 +29,10 @@ export async function run(provider: NetworkProvider) {
     );
   }
 
-  const user =
-    envMaybeAddress("RESOLVE_USER") ??
-    envMaybeAddress("ADDR") ??
-    null;
-
-  if (!user) throw new Error("Missing RESOLVE_USER (or ADDR)");
+  const user = requireAddress(
+    "RESOLVE_USER",
+    envMaybeAddress("RESOLVE_USER") ?? envMaybeAddress("ADDR")
+  );
 
   const gasStr = (envMaybeStr("RESOLVE_GAS") ?? "1.0").trim();
   const gas = toNano(gasStr);
