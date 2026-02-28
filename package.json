@@ -7,8 +7,9 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "blueprint build",
+    "test": "npm run build && tsc --noEmit && ts-node tests/Presale.spec.ts",
+    "build": "blueprint build Presale",
+    "ci": "npm run build && npm run test && npm run lint --if-present",
     "deploy:testnet": "blueprint run deploy --testnet",
     "deploy:mainnet": "blueprint run deploy",
     "check": "blueprint run check --testnet"

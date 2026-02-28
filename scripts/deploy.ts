@@ -107,7 +107,7 @@ export async function run(provider: NetworkProvider) {
 
   if (envFile) {
     try {
-      upsertEnvKey("PRESALE", presale.address.toString(), envFile);
+      upsertEnvKey(envFile, "PRESALE", presale.address.toString());
       console.log("📝 Updated PRESALE in .env");
     } catch (e: any) {
       console.log("⚠️ Could not update PRESALE in .env:", e?.message ?? String(e));
