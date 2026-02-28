@@ -146,7 +146,7 @@ contract Presale with Deployable {
   const WITHDRAW_GAS_BUFFER: Int = 300000000;    // 0.30 TON
 
   // Claim safety
-  const CLAIM_TTL_SEC: Int = 180;
+  const CLAIM_TTL_SEC: Int = 600;
 
   // Anti-drain: require caller to attach TON to cover jetton-wallet call
   const MIN_CLAIM_ATTACHED_TON: Int = 700000000; // 0.70 TON
@@ -219,7 +219,8 @@ contract Presale with Deployable {
   receive(msg: SetJettonWallet) {
     require(sender() == self.owner_, "NOT_OWNER");
     require(msg.wallet != myAddress(), "BAD_WALLET");
-    require(self.jettonWallet_ == null, "JETTON_WALLET_ALREADY_SET");
+    require(self.totalClaimableNano_ == 0, "CLAIMABLE_EXISTS");
+    require(self.totalPendingNano_ == 0, "PENDING_EXISTS");
     self.jettonWallet_ = msg.wallet;
   }
 
@@ -230,11 +231,9 @@ contract Presale with Deployable {
   receive(msg: Withdraw) {
     require(sender() == self.owner_, "NOT_OWNER");
     require(msg.amount > 0, "BAD_AMOUNT");
-
-    require(
-      myBalance() - msg.amount >= self.WITHDRAW_MIN_KEEP_TON + self.WITHDRAW_GAS_BUFFER,
-      "KEEP_MIN_BALANCE"
-    );
+    let reserved = self.totalClaimableNano_ + self.totalPendingNano_
+                 + self.WITHDRAW_MIN_KEEP_TON + self.WITHDRAW_GAS_BUFFER;
+    require(myBalance() - msg.amount >= reserved, "KEEP_MIN_BALANCE");
 
     send(SendParameters{
       to: self.owner_,
