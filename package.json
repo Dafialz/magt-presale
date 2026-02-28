@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npm run build && tsc --noEmit && ts-node tests/Presale.spec.ts",
+    "test": "npm run build && tsc --noEmit && ts-node tests/Presale.spec.ts && ts-node tests/Presale.e2e.spec.ts",
     "build": "blueprint build Presale",
     "ci": "npm run build && npm run test && npm run lint --if-present",
     "deploy:testnet": "blueprint run deploy --testnet",
@@ -24,6 +24,8 @@
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
+    "@ton/sandbox": "^0.41.0",
+    "@ton/test-utils": "^0.12.0",
     "@types/node": "^25.0.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
