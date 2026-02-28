@@ -1,0 +1,3624 @@
+// automatically generated from `@stdlib/std/stdlib.fc` `C:/magt presale/presale/build/Presale/Presale_Presale.fc` 
+PROGRAM{
+  DECLPROC __tact_store_address_opt
+  DECLPROC __tact_not_null
+  DECLPROC __tact_context_get
+  DECLPROC __tact_context_get_sender
+  DECLPROC __tact_dict_get_slice_int
+  DECLPROC __tact_dict_set_slice_int
+  DECLPROC __tact_dict_get_int_slice
+  DECLPROC __tact_dict_set_int_slice
+  DECLPROC __tact_dict_exists_slice
+  DECLPROC __tact_dict_exists_int
+  DECLPROC $DeployOk$_store
+  DECLPROC $DeployOk$_store_cell
+  DECLPROC $Presale$_store
+  DECLPROC $Presale$_load
+  DECLPROC $Context$_get_value
+  DECLPROC $Presale$init$_load
+  DECLPROC $Presale$_contract_init
+  DECLPROC $Presale$_contract_load
+  DECLPROC $Presale$_contract_store
+  DECLPROC $SendParameters$_constructor_to_value_bounce_body
+  DECLPROC $Presale$_fun_refundAll
+  DECLPROC $Presale$_fun_roundCapTokens
+  DECLPROC $Presale$_fun_roundCapNano
+  DECLPROC $Presale$_fun_isPresaleEnded
+  DECLPROC $Presale$_fun_roundPriceNano
+  DECLPROC $Presale$_fun_mapAdd
+  DECLPROC $Presale$_fun_addClaimableBuyer
+  DECLPROC $Presale$_fun_addClaimableReferral
+  DECLPROC $Presale$_fun_processBuy
+  DECLPROC $Presale$_fun_codeVersion
+  DECLPROC $Presale$_fun_ownerGetter
+  DECLPROC $Presale$_fun_jettonMasterGetter
+  DECLPROC $Presale$_fun_totalSoldNano
+  DECLPROC $Presale$_fun_totalRaisedNano
+  DECLPROC $Presale$_fun_currentRound
+  DECLPROC $Presale$_fun_currentRoundSoldNano
+  DECLPROC $Presale$_fun_jettonWalletSet
+  DECLPROC $Presale$_fun_jettonWallet
+  DECLPROC $Presale$_fun_mapGetOr0
+  DECLPROC $Presale$_fun_claimableBuyerNano
+  DECLPROC $Presale$_fun_claimableReferralNano
+  DECLPROC $Presale$_fun_totalClaimableNano
+  DECLPROC $Presale$_fun_totalPendingNano
+  DECLPROC $Presale$_fun_roundCapNanoGetter
+  DECLPROC $Presale$_fun_roundPriceNanoGetter
+  DECLPROC $Presale$_fun_isPending
+  DECLPROC $Presale$_fun_isPendingGetter
+  DECLPROC $Presale$_fun_pendingUntil
+  DECLPROC $Presale$_fun_pendingUntilGetter
+  DECLPROC $Presale$_fun_pendingQid
+  DECLPROC $Presale$_fun_pendingQidGetter
+  DECLPROC $Presale$_fun_allocQid
+  DECLPROC $Presale$_fun_setPending
+  DECLPROC $Presale$_fun_clearPending
+  DECLPROC $Presale$_fun_cleanupExpiredPending
+  DECLPROC $Presale$_fun_safeSubPendingTotal
+  DECLPROC $Presale$_fun_commitPending
+  DECLPROC $Presale$_fun_mapSub
+  DECLPROC $Presale$_fun_restoreClaimableBuyer
+  DECLPROC $Presale$_fun_restoreClaimableReferral
+  DECLPROC $Presale$_fun_restorePending
+  DECLPROC $Presale$_fun_sendJettonTo
+  DECLPROC $MessageParameters$_constructor_bounce_to_value_mode_body
+  DECLPROC $Presale$_fun_notify
+  DECLPROC $SendParameters$_constructor_to_value_bounce_mode_body
+  DECLPROC $DeployOk$_constructor_queryId
+  93886 DECLMETHOD %codeVersion
+  111277 DECLMETHOD %ownerGetter
+  128408 DECLMETHOD %jettonMasterGetter
+  93218 DECLMETHOD %totalSoldNano
+  97290 DECLMETHOD %totalRaisedNano
+  66703 DECLMETHOD %currentRound
+  66895 DECLMETHOD %currentRoundSoldNano
+  109247 DECLMETHOD %jettonWalletSet
+  90133 DECLMETHOD %jettonWallet
+  83027 DECLMETHOD %claimableBuyerNano
+  77155 DECLMETHOD %claimableReferralNano
+  65800 DECLMETHOD %totalClaimableNano
+  124626 DECLMETHOD %totalPendingNano
+  74558 DECLMETHOD %roundCapNanoGetter
+  110907 DECLMETHOD %roundPriceNanoGetter
+  87232 DECLMETHOD %isPendingGetter
+  123979 DECLMETHOD %pendingUntilGetter
+  127484 DECLMETHOD %pendingQidGetter
+  DECLPROC recv_internal
+  65535 DECLMETHOD __tact_selector_hack
+  DECLGLOBVAR __tact_context
+  DECLGLOBVAR __tact_context_sender
+  DECLGLOBVAR __tact_child_contract_codes
+  DECLGLOBVAR __tact_randomized
+  __tact_store_address_opt PROCINLINE:<{
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      b{00} STSLICECONST
+    }>ELSE<{
+      SWAP
+      STSLICE
+    }>
+  }>
+  __tact_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+  }>
+  __tact_context_get PROCINLINE:<{
+    __tact_context GETGLOB
+    4 UNTUPLE
+  }>
+  __tact_context_get_sender PROCINLINE:<{
+    __tact_context_sender GETGLOB
+  }>
+  __tact_dict_get_slice_int PROCINLINE:<{
+    s1 s3 s3 XCHG3
+        DICTGET NULLSWAPIFNOT
+    IF:<{
+      SWAP
+      LDIX
+      DROP
+    }>ELSE<{
+      2DROP
+      PUSHNULL
+    }>
+  }>
+  __tact_dict_set_slice_int PROCINLINE:<{
+    OVER
+    ISNULL
+    IF:<{
+      2DROP
+      -ROT
+          DICTDEL
+      DROP
+    }>ELSE<{
+      NEWC
+      SWAP
+      STIX
+      s1 s3 s3 XCHG3
+      DICTSETB
+    }>
+  }>
+  __tact_dict_get_int_slice PROCINLINE:<{
+    -ROT
+    DICTIGET
+    NULLSWAPIFNOT
+    IF:<{
+    }>ELSE<{
+      DROP
+      PUSHNULL
+    }>
+  }>
+  __tact_dict_set_int_slice PROCINLINE:<{
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      -ROT
+      DICTIDEL
+      DROP
+    }>ELSE<{
+      s1 s3 s3 XCHG3
+      DICTISET
+    }>
+  }>
+  __tact_dict_exists_slice PROCINLINE:<{
+    -ROT
+        DICTGET NULLSWAPIFNOT
+    NIP
+  }>
+  __tact_dict_exists_int PROCINLINE:<{
+    -ROT
+    DICTIGET
+    NULLSWAPIFNOT
+    NIP
+  }>
+  $DeployOk$_store PROCINLINE:<{
+    2952335191 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $DeployOk$_store_cell PROCINLINE:<{
+    SWAP
+    $DeployOk$_store INLINECALLDICT
+    ENDC
+  }>
+  $Presale$_store PROCINLINE:<{
+    s1 21 s() XCHG
+    s0 22 s() XCHG
+    STSLICE
+    s1 19 s() XCHG
+    STSLICE
+    SWAP
+    s0 17 s() XCHG
+    __tact_store_address_opt INLINECALLDICT
+    s0 s15 XCHG
+    NEWC
+    257 PUSHINT
+    STIX
+    s1 s14 XCHG
+    257 PUSHINT
+    STIX
+    s1 s12 XCHG
+    257 PUSHINT
+    STIX
+    s0 s10 XCHG
+    NEWC
+    257 PUSHINT
+    STIX
+    s1 s9 XCHG
+    STDICT
+    s1 s7 XCHG
+    STDICT
+    s1 s5 XCHG
+    STDICT
+    s0 s3 XCHG
+    NEWC
+    STDICT
+    s1 s2 XCHG
+    STDICT
+    STDICT
+    s0 s2 XCHG
+    NEWC
+    STDICT
+    s1 s3 XCHG
+    STDICT
+    s1 s3 XCHG
+    STDICT
+    s0 s4 XCHG
+    NEWC
+    STDICT
+    s1 s5 XCHG
+    STDICT
+    s1 s6 XCHG
+    257 PUSHINT
+    STIX
+    s1 s6 XCHG
+    STDICT
+    s1 s6 XCHG
+    257 PUSHINT
+    STIX
+    s1 s6 XCHG
+    257 PUSHINT
+    STIX
+    s1 s4 XCHG
+    STBREFR
+    STBREFR
+    s1 s3 XCHG
+    STBREFR
+    s1 s2 XCHG
+    STBREFR
+    STBREFR
+  }>
+  $Presale$_load PROCINLINE:<{
+    LDMSGADDR
+    LDMSGADDR
+                b{00} SDBEGINSQ
+                IF:<{
+                  PUSHNULL
+                }>ELSE<{
+                  LDMSGADDR
+                  SWAP
+                }>
+    SWAP
+    LDREF
+    SWAP
+    CTOS
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    LDREF
+    DROP
+    CTOS
+    257 PUSHINT
+    LDIX
+    LDDICT
+    LDDICT
+    LDDICT
+    LDREF
+    DROP
+    CTOS
+    LDDICT
+    LDDICT
+    LDDICT
+    LDREF
+    DROP
+    CTOS
+    LDDICT
+    LDDICT
+    LDDICT
+    LDREF
+    DROP
+    CTOS
+    LDDICT
+    LDDICT
+    257 PUSHINT
+    LDIX
+    LDDICT
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    DROP
+    19 s() 22 s() XCHG
+    19 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+  }>
+  $Context$_get_value PROCINLINE:<{
+    s1 s3 XCHG
+    3 BLKDROP
+  }>
+  $Presale$init$_load PROCINLINE:<{
+    LDMSGADDR
+    LDMSGADDR
+    -ROT
+  }>
+  $Presale$_contract_init PROCINLINE:<{
+    PUSHNULL
+    0 PUSHINT
+    s0 s0 s0 PUSH3
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    1 PUSHINT
+    PUSHNULL
+    s13 s13 PUSH2
+  }>
+  $Presale$_contract_load PROCINLINE:<{
+    c4 PUSH
+    CTOS
+    1 LDI
+    SWAP
+    IF:<{
+      $Presale$_load INLINECALLDICT
+      22 s() POP
+      20 s() 21 s() XCHG
+      19 s() 20 s() XCHG
+      18 s() 19 s() XCHG
+      17 s() 18 s() XCHG
+      16 s() 17 s() XCHG
+      s15 16 s() XCHG
+      15 ROLL
+    }>ELSE<{
+      $Presale$init$_load INLINECALLDICT
+      s0 s2 XCHG
+      ENDS
+      SWAP
+      $Presale$_contract_init INLINECALLDICT
+    }>
+  }>
+  $Presale$_contract_store PROCINLINE:<{
+    NEWC
+    TRUE
+    SWAP
+    1 STI
+    s0 22 s() XCHG
+    s0 21 s() XCHG
+    s0 20 s() XCHG
+    s0 19 s() XCHG
+    s0 18 s() XCHG
+    s0 17 s() XCHG
+    s0 16 s() XCHG
+    15 -ROLL
+    $Presale$_store INLINECALLDICT
+    ENDC
+    c4 POP
+  }>
+  $SendParameters$_constructor_to_value_bounce_body PROCINLINE:<{
+    0 PUSHINT
+    s3 s4 XCHG2
+    PUSHNULL
+    s0 s3 XCHG
+    PUSHNULL
+    3 -ROLL
+  }>
+  $Presale$_fun_refundAll PROCREF:<{
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      2DROP
+    }>
+    FALSE
+        <b b> PUSHREF // Pure Fift: "<b" creates a builder, "b>" turns it into a cell at compile time
+    $SendParameters$_constructor_to_value_bounce_body INLINECALLDICT
+        NEWC
+        b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+        1 STI               // store `bounce`
+        b{000} STSLICECONST // store bounced = false and src = addr_none
+        STSLICE             // store `to`
+        SWAP
+        STGRAMS             // store `value`
+        105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+        STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+        // → Stack state
+        // s0: Builder
+        // s1: `data`
+        // s2: `code`
+        // s3: `body`
+        // s4: `mode`
+        // Group 2: Placing the Builder after code and data, then checking those for nullability
+        s2 XCHG0
+        DUP2
+        ISNULL
+        SWAP
+        ISNULL
+        AND
+        // → Stack state
+        // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+        // s1: `code`
+        // s2: `data`
+        // s3: Builder
+        // s4: `body`
+        // s5: `mode`
+        // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+        <{
+            DROP2 // drop `data` and `code`, since either of those is null
+            b{0} STSLICECONST
+        }> PUSHCONT
+        // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+        <{
+            // _ split_depth:(Maybe (## 5))
+            //   special:(Maybe TickTock)
+            //   code:(Maybe ^Cell)
+            //   data:(Maybe ^Cell)
+            //   library:(Maybe ^Cell)
+            // = StateInit;
+            ROT                // place message Builder on top
+            b{10} STSLICECONST // store Maybe = true, Either = false
+            // Start composing inlined StateInit
+            b{00} STSLICECONST // store split_depth and special first
+            STDICT             // store code
+            STDICT             // store data
+            b{0} STSLICECONST  // store library
+        }> PUSHCONT
+        // Group 3: IFELSE that does the branching shown above
+        IFELSE
+        // → Stack state
+        // s0: Builder
+        // s1: null or StateInit
+        // s2: `body`
+        // s3: `mode`
+        // Group 4: Finalizing the message
+        STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+        ENDC
+        // → Stack state
+        // s0: Cell
+        // s1: `mode`
+        // Group 5: Sending the message, with `mode` on top
+        SWAP
+        SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+  }>
+  $Presale$_fun_roundCapTokens PROCREF:<{
+    DUP
+    IFNOTJMP:<{
+      DROP
+      65225022 PUSHINT
+    }>
+    DUP
+    1 EQINT
+    IFJMP:<{
+      DROP
+      57039669 PUSHINT
+    }>
+    DUP
+    2 EQINT
+    IFJMP:<{
+      DROP
+      50370908 PUSHINT
+    }>
+    DUP
+    3 EQINT
+    IFJMP:<{
+      DROP
+      44326399 PUSHINT
+    }>
+    DUP
+    4 EQINT
+    IFJMP:<{
+      DROP
+      39007231 PUSHINT
+    }>
+    DUP
+    5 EQINT
+    IFJMP:<{
+      DROP
+      34326365 PUSHINT
+    }>
+    DUP
+    6 EQINT
+    IFJMP:<{
+      DROP
+      30207200 PUSHINT
+    }>
+    DUP
+    7 EQINT
+    IFJMP:<{
+      DROP
+      26582336 PUSHINT
+    }>
+    DUP
+    8 EQINT
+    IFJMP:<{
+      DROP
+      23392455 PUSHINT
+    }>
+    DUP
+    9 EQINT
+    IFJMP:<{
+      DROP
+      20585361 PUSHINT
+    }>
+    DUP
+    10 EQINT
+    IFJMP:<{
+      DROP
+      18115117 PUSHINT
+    }>
+    DUP
+    11 EQINT
+    IFJMP:<{
+      DROP
+      15941303 PUSHINT
+    }>
+    DUP
+    12 EQINT
+    IFJMP:<{
+      DROP
+      14028347 PUSHINT
+    }>
+    DUP
+    13 EQINT
+    IFJMP:<{
+      DROP
+      12344945 PUSHINT
+    }>
+    DUP
+    14 EQINT
+    IFJMP:<{
+      DROP
+      10863552 PUSHINT
+    }>
+    DUP
+    15 EQINT
+    IFJMP:<{
+      DROP
+      9559925 PUSHINT
+    }>
+    DUP
+    16 EQINT
+    IFJMP:<{
+      DROP
+      8412734 PUSHINT
+    }>
+    DUP
+    17 EQINT
+    IFJMP:<{
+      DROP
+      7423267 PUSHINT
+    }>
+    18 EQINT
+    IFJMP:<{
+      6514821 PUSHINT
+    }>
+    5733043 PUSHINT
+  }>
+  $Presale$_fun_roundCapNano PROCREF:<{
+    $Presale$_fun_roundCapTokens INLINECALLDICT
+    1000000000 PUSHINT
+    MUL
+  }>
+  $Presale$_fun_isPresaleEnded PROCREF:<{
+    16 s() PUSH
+    19 LESSINT
+    IFJMP:<{
+      FALSE
+    }>
+    16 s() PUSH
+    19 GTINT
+    IFJMP:<{
+      TRUE
+    }>
+    19 PUSHINT
+    $Presale$_fun_roundCapNano INLINECALLDICT
+    DUP
+    0 GTINT
+    IF:<{
+      16 s() PUSH
+      SWAP
+      GEQ
+    }>ELSE<{
+      DROP
+      FALSE
+    }>
+  }>
+  $Presale$_fun_roundPriceNano PROCREF:<{
+    DUP
+    IFNOTJMP:<{
+      DROP
+      11489000 PUSHINT
+    }>
+    DUP
+    1 EQINT
+    IFJMP:<{
+      DROP
+      13443000 PUSHINT
+    }>
+    DUP
+    2 EQINT
+    IFJMP:<{
+      DROP
+      15729000 PUSHINT
+    }>
+    DUP
+    3 EQINT
+    IFJMP:<{
+      DROP
+      18403000 PUSHINT
+    }>
+    DUP
+    4 EQINT
+    IFJMP:<{
+      DROP
+      21532000 PUSHINT
+    }>
+    DUP
+    5 EQINT
+    IFJMP:<{
+      DROP
+      25191000 PUSHINT
+    }>
+    DUP
+    6 EQINT
+    IFJMP:<{
+      DROP
+      29471000 PUSHINT
+    }>
+    DUP
+    7 EQINT
+    IFJMP:<{
+      DROP
+      34483000 PUSHINT
+    }>
+    DUP
+    8 EQINT
+    IFJMP:<{
+      DROP
+      40345000 PUSHINT
+    }>
+    DUP
+    9 EQINT
+    IFJMP:<{
+      DROP
+      47206000 PUSHINT
+    }>
+    DUP
+    10 EQINT
+    IFJMP:<{
+      DROP
+      55231000 PUSHINT
+    }>
+    DUP
+    11 EQINT
+    IFJMP:<{
+      DROP
+      64618000 PUSHINT
+    }>
+    DUP
+    12 EQINT
+    IFJMP:<{
+      DROP
+      75603000 PUSHINT
+    }>
+    DUP
+    13 EQINT
+    IFJMP:<{
+      DROP
+      88455000 PUSHINT
+    }>
+    DUP
+    14 EQINT
+    IFJMP:<{
+      DROP
+      103495000 PUSHINT
+    }>
+    DUP
+    15 EQINT
+    IFJMP:<{
+      DROP
+      121086000 PUSHINT
+    }>
+    DUP
+    16 EQINT
+    IFJMP:<{
+      DROP
+      141671000 PUSHINT
+    }>
+    DUP
+    17 EQINT
+    IFJMP:<{
+      DROP
+      165757000 PUSHINT
+    }>
+    18 EQINT
+    IFJMP:<{
+      193935000 PUSHINT
+    }>
+    226397000 PUSHINT
+  }>
+  $Presale$_fun_mapAdd PROCREF:<{
+    DUP
+    1 LESSINT
+    NIP
+    IFJMP:<{
+      2DROP
+    }>
+    OVER
+    267 PUSHINT
+    s2 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      OVER
+      267 PUSHINT
+      s2 PUSH
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      2 1 BLKDROP2
+      __tact_not_null INLINECALLDICT
+      DROP
+    }>ELSE<{
+      2DROP
+    }>
+  }>
+  $Presale$_fun_addClaimableBuyer PROCREF:<{
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      2DROP
+    }>
+    16 s() PUSH
+    267 PUSHINT
+    s3 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      16 s() PUSH
+      267 PUSHINT
+      s3 PUSH
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>ELSE<{
+      0 PUSHINT
+    }>
+    267 PUSHINT
+    s1 s2 XCPU
+    ADD
+    s2 18 s() XCHG
+    s3 s(-1) PUXC
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s0 s3 XCHG
+    16 s() PUSH
+    ADD
+    s3 16 s() XCHG
+    s14 s(-1) s3 PUXC2
+    $Presale$_fun_mapAdd INLINECALLDICT
+  }>
+  $Presale$_fun_addClaimableReferral PROCREF:<{
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      2DROP
+    }>
+    s15 PUSH
+    267 PUSHINT
+    s3 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      s15 PUSH
+      267 PUSHINT
+      s3 PUSH
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>ELSE<{
+      0 PUSHINT
+    }>
+    267 PUSHINT
+    s1 s2 XCPU
+    ADD
+    s2 17 s() XCHG
+    s3 s(-1) PUXC
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s3 s15 XCPU
+    ADD
+    s3 s15 XCHG
+    s13 s(-1) s3 PUXC2
+    $Presale$_fun_mapAdd INLINECALLDICT
+  }>
+  $Presale$_fun_processBuy PROCREF:<{
+    __tact_context_get_sender INLINECALLDICT
+    __tact_context_get INLINECALLDICT
+    $Context$_get_value INLINECALLDICT
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      3 BLKDROP
+    }>
+    21 s() 24 s() XCHG
+    20 s() 23 s() XCHG
+    19 s() 22 s() XCHG
+    18 s() 24 s() XCHG
+    17 s() 23 s() XCHG
+    16 s() 22 s() XCHG
+    s15 24 s() XCHG
+    s14 23 s() XCHG
+    s13 22 s() XCHG
+    s12 24 s() XCHG
+    s11 23 s() XCHG
+    s10 22 s() XCHG
+    s9 24 s() XCHG
+    s8 23 s() XCHG
+    s7 22 s() XCHG
+    s6 24 s() XCHG
+    s5 23 s() XCHG
+    s4 22 s() XCHG
+    s3 24 s() XCHG
+    s2 23 s() XCHG
+    s1 22 s() XCHG
+    s0 24 s() XCHG
+    $Presale$_fun_isPresaleEnded INLINECALLDICT
+    IFJMP:<{
+      23 s() POP
+      20 s() 23 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 21 s() XCHG
+      17 s() 20 s() XCHG
+      16 s() 19 s() XCHG
+      s15 18 s() XCHG
+      s14 17 s() XCHG
+      s13 16 s() XCHG
+      s12 s15 XCHG
+      s11 s14 XCHG
+      3 11 BLKSWAP
+      $Presale$_fun_refundAll INLINECALLDICT
+    }>
+    24 s() PUSH
+    0 PUSHINT
+    FALSE
+    OVER
+    WHILE:<{
+      OVER
+      NOT
+    }>DO<{
+      INC
+      DUP
+      200 PUSHINT
+      GEQ
+      IF:<{
+        NIP
+        TRUE
+      }>ELSE<{
+        s3 PUSH
+        1 LESSINT
+        IF:<{
+          NIP
+          TRUE
+        }>ELSE<{
+          21 s() 25 s() XCHG
+          20 s() 24 s() XCHG
+          19 s() 23 s() XCHG
+          18 s() 22 s() XCHG
+          17 s() 25 s() XCHG
+          16 s() 24 s() XCHG
+          s15 23 s() XCHG
+          s14 22 s() XCHG
+          s13 25 s() XCHG
+          s12 24 s() XCHG
+          s11 23 s() XCHG
+          s10 22 s() XCHG
+          s9 25 s() XCHG
+          s8 24 s() XCHG
+          s7 23 s() XCHG
+          s6 22 s() XCHG
+          s5 25 s() XCHG
+          s4 24 s() XCHG
+          s3 23 s() XCHG
+          s2 22 s() XCHG
+          s1 25 s() XCHG
+          s0 24 s() XCHG
+          $Presale$_fun_isPresaleEnded INLINECALLDICT
+          IF:<{
+            25 s() POP
+            TRUE
+          }>ELSE<{
+            16 s() PUSH
+            -1 GTINT
+            IF:<{
+              16 s() PUSH
+              20 LESSINT
+            }>ELSE<{
+              FALSE
+            }>
+            IF:<{
+              16 s() PUSH
+              $Presale$_fun_roundCapNano INLINECALLDICT
+              21 s() 22 s() XCHG
+              20 s() 22 s() XCHG
+              19 s() 22 s() XCHG
+              18 s() 22 s() XCHG
+              17 s() 22 s() XCHG
+              22 s() PUSH
+              s0 17 s() XCHG
+              s0 16 s() XCHG
+              15 -ROLL
+              s0 23 s() XCHG
+              $Presale$_fun_roundPriceNano INLINECALLDICT
+              23 s() PUSH
+              1 LESSINT
+              IF:<{
+                TRUE
+              }>ELSE<{
+                DUP
+                1 LESSINT
+              }>
+              IF:<{
+                DROP
+                22 s() POP
+                25 s() POP
+                TRUE
+              }>ELSE<{
+                s0 23 s() XCHG
+                16 s() PUSH
+                SUB
+                DUP
+                1 LESSINT
+                IF:<{
+                  DROP
+                  22 s() POP
+                  s15 PUSH
+                  18 GTINT
+                  IF:<{
+                    25 s() POP
+                    TRUE
+                  }>ELSE<{
+                    s14 POP
+                    s0 s14 XCHG
+                    INC
+                    s13 24 s() XCHG
+                    s0 s14 XCHG
+                    0 PUSHINT
+                    s0 s14 XCHG
+                  }>
+                }>ELSE<{
+                  25 s() PUSH
+                  1000000000 PUSHINT
+                  MUL
+                  24 s() PUSH
+                  DIV
+                  DUP
+                  1 LESSINT
+                  IF:<{
+                    2DROP
+                    22 s() POP
+                    25 s() POP
+                    TRUE
+                  }>ELSE<{
+                    s0 s1 PUSH2
+                    GREATER
+                    IF:<{
+                      DROP
+                    }>ELSE<{
+                      NIP
+                    }>
+                    DUP
+                    s0 24 s() XCHG
+                    MUL
+                    1000000000 PUSHINT
+                    DIV
+                    DUP
+                    1 LESSINT
+                    IF:<{
+                      DROP
+                      22 s() POP
+                      25 s() POP
+                      TRUE
+                    }>ELSE<{
+                      s0 16 s() XCHG
+                      23 s() PUSH
+                      ADD
+                      s0 19 s() XCHG
+                      23 s() PUSH
+                      ADD
+                      s0 18 s() XCHG
+                      16 s() PUSH
+                      ADD
+                      s1 24 s() XCHG
+                      s0 23 s() XCHG
+                      ADD
+                      s1 24 s() XCHG
+                      s0 s15 XCHG
+                      SUB
+                      DUP
+                      0 LESSINT
+                      IF:<{
+                        DROP
+                        0 PUSHINT
+                      }>
+                      s0 23 s() XCHG
+                      s0 25 s() XCHG
+                      s14 22 s() XCHG
+                      s14 21 s() XCHG
+                      16 s() 17 s() XCHG
+                      s14 16 s() XCHG
+                    }>
+                  }>
+                }>
+              }>
+            }>ELSE<{
+              25 s() POP
+              s0 24 s() XCHG
+              s0 20 s() XCHG
+              s0 19 s() XCHG
+              s0 18 s() XCHG
+              s0 17 s() XCHG
+              s0 16 s() XCHG
+              15 -ROLL
+              TRUE
+            }>
+            21 s() 25 s() XCHG
+            20 s() 21 s() XCHG
+            19 s() 20 s() XCHG
+            18 s() 19 s() XCHG
+            17 s() 18 s() XCHG
+            16 s() 17 s() XCHG
+            s15 16 s() XCHG
+            s14 s15 XCHG
+            s13 s14 XCHG
+            s12 s13 XCHG
+            s11 s12 XCHG
+            s10 s11 XCHG
+            s9 s10 XCHG
+            s8 s9 XCHG
+            s7 s8 XCHG
+            s6 s7 XCHG
+            s5 s6 XCHG
+            s4 s5 XCHG
+            s3 s4 XCHG
+            s1 s3 s0 XCHG3
+          }>
+          21 s() 25 s() XCHG
+          20 s() 24 s() XCHG
+          19 s() 23 s() XCHG
+          18 s() 22 s() XCHG
+          17 s() 21 s() XCHG
+          16 s() 20 s() XCHG
+          s15 19 s() XCHG
+          s14 18 s() XCHG
+          s13 17 s() XCHG
+          s12 16 s() XCHG
+          s11 s15 XCHG
+          s10 s14 XCHG
+          s9 s13 XCHG
+          s8 s12 XCHG
+          s7 s11 XCHG
+          s6 s10 XCHG
+          s5 s9 XCHG
+          s4 s8 XCHG
+          s3 s7 XCHG
+          s6 s5 s0 XCHG3
+          s1 s4 XCHG
+        }>
+      }>
+      SWAP
+    }>
+    2DROP
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      2DROP
+      23 s() POP
+      20 s() 23 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 21 s() XCHG
+      17 s() 20 s() XCHG
+      16 s() 19 s() XCHG
+      s15 18 s() XCHG
+      s14 17 s() XCHG
+      s13 16 s() XCHG
+      s12 s15 XCHG
+      s11 s14 XCHG
+      3 11 BLKSWAP
+      $Presale$_fun_refundAll INLINECALLDICT
+    }>
+    26 s() POP
+    25 s() PUSH
+    50000 PUSHINT
+    MUL
+    1000000 PUSHINT
+    DIV
+    26 s() PUSH
+    SWAP
+    ADD
+    s0 26 s() XCHG
+    50000 PUSHINT
+    MUL
+    1000000 PUSHINT
+    DIV
+    22 s() 23 s() XCHG
+    21 s() 23 s() XCHG
+    20 s() 23 s() XCHG
+    19 s() 23 s() XCHG
+    18 s() 23 s() XCHG
+    17 s() 23 s() XCHG
+    16 s() 23 s() XCHG
+    s15 23 s() XCHG
+    s14 23 s() XCHG
+    s13 23 s() XCHG
+    s12 23 s() XCHG
+    s11 23 s() XCHG
+    s10 23 s() XCHG
+    s9 23 s() XCHG
+    s8 23 s() XCHG
+    s7 23 s() XCHG
+    s6 23 s() XCHG
+    s5 23 s() XCHG
+    s4 23 s() XCHG
+    s3 23 s() XCHG
+    s2 23 s() XCHG
+    s1 23 s() XCHG
+    24 s() PUSH
+    SWAP
+    s0 27 s() XCHG
+    $Presale$_fun_addClaimableBuyer INLINECALLDICT
+    24 s() PUSH
+    ISNULL
+    NOT
+    IF:<{
+      24 s() PUSH
+      __tact_not_null INLINECALLDICT
+      24 s() PUSH
+      SDEQ
+      NOT
+      IF:<{
+        25 s() PUSH
+        0 GTINT
+      }>ELSE<{
+        FALSE
+      }>
+      IF:<{
+        s0 24 s() XCHG
+        __tact_not_null INLINECALLDICT
+        21 s() 23 s() XCHG
+        20 s() 22 s() XCHG
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        s12 s14 XCHG
+        s11 s13 XCHG
+        s10 s12 XCHG
+        s9 s11 XCHG
+        s8 s10 XCHG
+        s7 s9 XCHG
+        s6 s8 XCHG
+        s5 s7 XCHG
+        s4 s6 XCHG
+        s3 s5 XCHG
+        s4 s3 s0 XCHG3
+        s2 24 s() XCHG
+        SWAP
+        s0 25 s() XCHG
+        $Presale$_fun_addClaimableReferral INLINECALLDICT
+        s1 23 s() XCHG
+        s0 22 s() XCHG
+        s1 21 s() XCHG
+        s0 20 s() XCHG
+        s1 19 s() XCHG
+        s0 18 s() XCHG
+        s1 17 s() XCHG
+        s0 16 s() XCHG
+        14 2 BLKSWAP
+      }>ELSE<{
+        24 s() POP
+        24 s() POP
+      }>
+    }>ELSE<{
+      24 s() POP
+      24 s() POP
+    }>
+    20 s() PUSH
+    10000000 PUSHINT
+    GEQ
+    IF:<{
+      19 s() 23 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 21 s() XCHG
+      16 s() 20 s() XCHG
+      s15 19 s() XCHG
+      s14 18 s() XCHG
+      s13 17 s() XCHG
+      s12 16 s() XCHG
+      4 12 BLKSWAP
+      $Presale$_fun_refundAll INLINECALLDICT
+      s1 21 s() XCHG
+      s0 20 s() XCHG
+      s3 19 s() XCHG
+      s2 18 s() XCHG
+      s1 17 s() XCHG
+      s0 16 s() XCHG
+      12 4 BLKSWAP
+    }>ELSE<{
+      20 s() POP
+      20 s() POP
+    }>
+    17 s() 21 s() XCHG
+    16 s() 20 s() XCHG
+    s15 19 s() XCHG
+    s14 18 s() XCHG
+    s13 17 s() XCHG
+    s12 16 s() XCHG
+    4 12 BLKSWAP
+  }>
+  $Presale$_fun_codeVersion PROCREF:<{
+    13 PUSHINT
+  }>
+  $Presale$_fun_ownerGetter PROCREF:<{
+    21 s() PUSH
+  }>
+  $Presale$_fun_jettonMasterGetter PROCREF:<{
+    20 s() PUSH
+  }>
+  $Presale$_fun_totalSoldNano PROCREF:<{
+    18 s() PUSH
+  }>
+  $Presale$_fun_totalRaisedNano PROCREF:<{
+    17 s() PUSH
+  }>
+  $Presale$_fun_currentRound PROCREF:<{
+    16 s() PUSH
+  }>
+  $Presale$_fun_currentRoundSoldNano PROCREF:<{
+    s15 PUSH
+  }>
+  $Presale$_fun_jettonWalletSet PROCREF:<{
+    19 s() PUSH
+    ISNULL
+    NOT
+    IF:<{
+      1 PUSHINT
+    }>ELSE<{
+      0 PUSHINT
+    }>
+  }>
+  $Presale$_fun_jettonWallet PROCREF:<{
+    19 s() PUSH
+  }>
+  $Presale$_fun_mapGetOr0 PROCREF:<{
+    OVER
+    267 PUSHINT
+    s2 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      267 PUSHINT
+      SWAP
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>ELSE<{
+      2DROP
+      0 PUSHINT
+    }>
+  }>
+  $Presale$_fun_claimableBuyerNano PROCREF:<{
+    21 s() 22 s() XCHG
+    20 s() 22 s() XCHG
+    19 s() 22 s() XCHG
+    18 s() 22 s() XCHG
+    17 s() 22 s() XCHG
+    16 s() 22 s() XCHG
+    s15 22 s() XCHG
+    s14 22 s() XCHG
+    s13 22 s() XCHG
+    22 s() PUSH
+    13 -ROLL
+    s0 23 s() XCHG
+    23 s() PUSH
+    $Presale$_fun_mapGetOr0 INLINECALLDICT
+    s11 s(-1) PUXC
+    s0 24 s() XCHG
+    $Presale$_fun_mapGetOr0 INLINECALLDICT
+    s1 23 s() XCHG
+    SUB
+    DUP
+    0 GTINT
+    IF:<{
+    }>ELSE<{
+      DROP
+      0 PUSHINT
+    }>
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    s14 s15 XCHG
+    s13 s14 XCHG
+    s12 s13 XCHG
+    s11 s12 XCHG
+    s10 s11 XCHG
+    s9 s10 XCHG
+    s8 s9 XCHG
+    s7 s8 XCHG
+    s6 s7 XCHG
+    s5 s6 XCHG
+    s4 s5 XCHG
+    s3 s4 XCHG
+    s1 s3 s0 XCHG3
+  }>
+  $Presale$_fun_claimableReferralNano PROCREF:<{
+    21 s() 22 s() XCHG
+    20 s() 22 s() XCHG
+    19 s() 22 s() XCHG
+    18 s() 22 s() XCHG
+    17 s() 22 s() XCHG
+    16 s() 22 s() XCHG
+    s15 22 s() XCHG
+    s14 22 s() XCHG
+    s13 22 s() XCHG
+    s12 22 s() XCHG
+    22 s() PUSH
+    12 -ROLL
+    s0 23 s() XCHG
+    23 s() PUSH
+    $Presale$_fun_mapGetOr0 INLINECALLDICT
+    s10 s(-1) PUXC
+    s0 24 s() XCHG
+    $Presale$_fun_mapGetOr0 INLINECALLDICT
+    s1 23 s() XCHG
+    SUB
+    DUP
+    0 GTINT
+    IF:<{
+    }>ELSE<{
+      DROP
+      0 PUSHINT
+    }>
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    s14 s15 XCHG
+    s13 s14 XCHG
+    s12 s13 XCHG
+    s11 s12 XCHG
+    s10 s11 XCHG
+    s9 s10 XCHG
+    s8 s9 XCHG
+    s7 s8 XCHG
+    s6 s7 XCHG
+    s5 s6 XCHG
+    s4 s5 XCHG
+    s3 s4 XCHG
+    s1 s3 s0 XCHG3
+  }>
+  $Presale$_fun_totalClaimableNano PROCREF:<{
+    OVER
+  }>
+  $Presale$_fun_totalPendingNano PROCREF:<{
+    DUP
+  }>
+  $Presale$_fun_roundCapNanoGetter PROCREF:<{
+    $Presale$_fun_roundCapNano INLINECALLDICT
+  }>
+  $Presale$_fun_roundPriceNanoGetter PROCREF:<{
+    $Presale$_fun_roundPriceNano INLINECALLDICT
+  }>
+  $Presale$_fun_isPending PROCREF:<{
+    s9 PUSH
+    267 PUSHINT
+    s2 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      267 PUSHINT
+      s10 PUSH
+      s0 s2 XCHG
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+      0 GTINT
+    }>ELSE<{
+      DROP
+      FALSE
+    }>
+  }>
+  $Presale$_fun_isPendingGetter PROCREF:<{
+    $Presale$_fun_isPending INLINECALLDICT
+    IF:<{
+      1 PUSHINT
+    }>ELSE<{
+      0 PUSHINT
+    }>
+  }>
+  $Presale$_fun_pendingUntil PROCREF:<{
+    s6 PUSH
+    267 PUSHINT
+    s2 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IFJMP:<{
+      267 PUSHINT
+      s7 PUSH
+      s0 s2 XCHG
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>
+    DROP
+    0 PUSHINT
+  }>
+  $Presale$_fun_pendingUntilGetter PROCREF:<{
+    $Presale$_fun_pendingUntil INLINECALLDICT
+  }>
+  $Presale$_fun_pendingQid PROCREF:<{
+    s5 PUSH
+    267 PUSHINT
+    s2 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IFJMP:<{
+      267 PUSHINT
+      s6 PUSH
+      s0 s2 XCHG
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>
+    DROP
+    0 PUSHINT
+  }>
+  $Presale$_fun_pendingQidGetter PROCREF:<{
+    $Presale$_fun_pendingQid INLINECALLDICT
+  }>
+  $Presale$_fun_allocQid PROCREF:<{
+    s3 PUSH
+    64 MODPOW2#
+    DUP
+    1 LESSINT
+    IF:<{
+      DROP
+      1 PUSHINT
+    }>
+    s0 s4 XCHG
+    INC
+    64 MODPOW2#
+    DUP
+    1 LESSINT
+    IF:<{
+      DROP
+      1 PUSHINT
+    }>
+    s0 s4 XCHG
+  }>
+  $Presale$_fun_setPending PROCREF:<{
+    s1 s13 XCHG
+    267 PUSHINT
+    s0 s5 s4 XCPUXC
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s1 s11 XCHG
+    267 PUSHINT
+    s0 s4 s12 XCPUXC
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s1 s9 XCHG
+    267 PUSHINT
+    s0 s3 s12 XCPUXC
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    267 PUSHINT
+        NOW
+    180 PUSHINT
+    ADD
+    s3 PUSH
+    s3 s10 XCHG
+    SWAP
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s0 s6 XCHG
+    267 PUSHINT
+    s2 s9 PUSH2
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s2 s4 XCHG
+    257 PUSHINT
+    s9 s2 XCHG2
+    __tact_dict_set_int_slice INLINECALLDICT
+    s7 s8 XCHG
+    s5 s6 XCHG
+    s4 s5 XCHG
+    s0 s2 XCHG
+  }>
+  $Presale$_fun_clearPending PROCREF:<{
+    s0 s9 XCHG
+    267 PUSHINT
+    s10 PUSH
+    0 PUSHINT
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s0 s8 XCHG
+    267 PUSHINT
+    s10 PUSH
+    0 PUSHINT
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s0 s7 XCHG
+    267 PUSHINT
+    s10 PUSH
+    0 PUSHINT
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s0 s6 XCHG
+    267 PUSHINT
+    s10 PUSH
+    0 PUSHINT
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s1 s5 XCHG
+    267 PUSHINT
+    s0 s10 XCHG2
+    0 PUSHINT
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s7 s8 XCHG
+    s6 s7 XCHG
+    s5 s6 XCHG
+    s0 s4 XCHG
+  }>
+  $Presale$_fun_cleanupExpiredPending PROCREF:<{
+    DROP
+  }>
+  $Presale$_fun_safeSubPendingTotal PROCREF:<{
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      DROP
+    }>
+    2DUP
+    GEQ
+    IF:<{
+      SUB
+    }>ELSE<{
+      2DROP
+      0 PUSHINT
+    }>
+  }>
+  $Presale$_fun_commitPending PROCREF:<{
+    s3 PUSH
+    257 PUSHINT
+    s2 PUSH
+    __tact_dict_exists_int INLINECALLDICT
+    IFNOTJMP:<{
+      DROP
+    }>
+    s3 PUSH
+    257 PUSHINT
+    s2 PUSH
+    __tact_dict_get_int_slice INLINECALLDICT
+    __tact_not_null INLINECALLDICT
+    21 s() 23 s() XCHG
+    20 s() 22 s() XCHG
+    19 s() 23 s() XCHG
+    18 s() 22 s() XCHG
+    17 s() 23 s() XCHG
+    16 s() 22 s() XCHG
+    s15 23 s() XCHG
+    s14 22 s() XCHG
+    s13 23 s() XCHG
+    s12 22 s() XCHG
+    s11 23 s() XCHG
+    s10 22 s() XCHG
+    s9 23 s() XCHG
+    s8 22 s() XCHG
+    s7 23 s() XCHG
+    s6 22 s() XCHG
+    s5 23 s() XCHG
+    s4 22 s() XCHG
+    s3 23 s() XCHG
+    s2 22 s() XCHG
+    s1 23 s() XCHG
+    s0 22 s() XCHG
+    22 s() PUSH
+    $Presale$_fun_isPending INLINECALLDICT
+    IFNOTJMP:<{
+      22 s() POP
+      22 s() POP
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      2 14 BLKSWAP
+    }>
+    22 s() PUSH
+    $Presale$_fun_pendingQid INLINECALLDICT
+    SWAP
+    s0 24 s() XCHG
+    NEQ
+    IFJMP:<{
+      21 s() POP
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+    }>
+    s7 PUSH
+    267 PUSHINT
+    23 s() PUSH
+    257 PUSHINT
+    __tact_dict_get_slice_int INLINECALLDICT
+    __tact_not_null INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    s14 s15 XCHG
+    s13 s14 XCHG
+    s12 s13 XCHG
+    s11 s12 XCHG
+    s10 s11 XCHG
+    s9 s10 XCHG
+    s8 s9 XCHG
+    s7 s8 XCHG
+    s6 s7 XCHG
+    s5 s6 XCHG
+    s4 s5 XCHG
+    s3 s4 XCHG
+    s1 s3 s0 XCHG3
+    s1 23 s() XCHG
+    $Presale$_fun_safeSubPendingTotal INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_clearPending INLINECALLDICT
+  }>
+  $Presale$_fun_mapSub PROCREF:<{
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      3 BLKDROP
+    }>
+    s2 PUSH
+    267 PUSHINT
+    s3 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      s2 PUSH
+      267 PUSHINT
+      s3 PUSH
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      2 2 BLKDROP2
+      __tact_not_null INLINECALLDICT
+    }>ELSE<{
+      2 1 BLKDROP2
+      0 PUSHINT
+    }>
+    s0 s1 PUSH2
+    LEQ
+    2 1 BLKDROP2
+    IF:<{
+    }>ELSE<{
+    }>
+  }>
+  $Presale$_fun_restoreClaimableBuyer PROCREF:<{
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      2DROP
+    }>
+    16 s() PUSH
+    267 PUSHINT
+    s3 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      16 s() PUSH
+      267 PUSHINT
+      s3 PUSH
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>ELSE<{
+      0 PUSHINT
+    }>
+    267 PUSHINT
+    s1 s2 XCPU
+    ADD
+    s3 18 s() XCHG
+    s1 s2 XCHG
+    s1 18 s() XCHG
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s2 s15 XCHG2
+    ADD
+    SWAP
+  }>
+  $Presale$_fun_restoreClaimableReferral PROCREF:<{
+    DUP
+    1 LESSINT
+    IFJMP:<{
+      2DROP
+    }>
+    s15 PUSH
+    267 PUSHINT
+    s3 PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      s15 PUSH
+      267 PUSHINT
+      s3 PUSH
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>ELSE<{
+      0 PUSHINT
+    }>
+    267 PUSHINT
+    s1 s2 XCPU
+    ADD
+    s3 17 s() XCHG
+    s1 s2 XCHG
+    s1 17 s() XCHG
+    257 PUSHINT
+    __tact_dict_set_slice_int INLINECALLDICT
+    s2 s14 XCHG2
+    ADD
+    SWAP
+  }>
+  $Presale$_fun_restorePending PROCREF:<{
+    s3 PUSH
+    257 PUSHINT
+    s2 PUSH
+    __tact_dict_exists_int INLINECALLDICT
+    IFNOTJMP:<{
+      DROP
+    }>
+    s3 PUSH
+    257 PUSHINT
+    s2 PUSH
+    __tact_dict_get_int_slice INLINECALLDICT
+    __tact_not_null INLINECALLDICT
+    21 s() 23 s() XCHG
+    20 s() 22 s() XCHG
+    19 s() 23 s() XCHG
+    18 s() 22 s() XCHG
+    17 s() 23 s() XCHG
+    16 s() 22 s() XCHG
+    s15 23 s() XCHG
+    s14 22 s() XCHG
+    s13 23 s() XCHG
+    s12 22 s() XCHG
+    s11 23 s() XCHG
+    s10 22 s() XCHG
+    s9 23 s() XCHG
+    s8 22 s() XCHG
+    s7 23 s() XCHG
+    s6 22 s() XCHG
+    s5 23 s() XCHG
+    s4 22 s() XCHG
+    s3 23 s() XCHG
+    s2 22 s() XCHG
+    s1 23 s() XCHG
+    s0 22 s() XCHG
+    22 s() PUSH
+    $Presale$_fun_isPending INLINECALLDICT
+    IFNOTJMP:<{
+      22 s() POP
+      22 s() POP
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      2 14 BLKSWAP
+    }>
+    22 s() PUSH
+    $Presale$_fun_pendingQid INLINECALLDICT
+    SWAP
+    s0 24 s() XCHG
+    NEQ
+    IFJMP:<{
+      21 s() POP
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+    }>
+    s7 PUSH
+    267 PUSHINT
+    23 s() PUSH
+    257 PUSHINT
+    __tact_dict_get_slice_int INLINECALLDICT
+    __tact_not_null INLINECALLDICT
+    s7 PUSH
+    267 PUSHINT
+    24 s() PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      s7 PUSH
+      267 PUSHINT
+      24 s() PUSH
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>ELSE<{
+      0 PUSHINT
+    }>
+    s7 PUSH
+    267 PUSHINT
+    25 s() PUSH
+    __tact_dict_exists_slice INLINECALLDICT
+    IF:<{
+      s7 PUSH
+      267 PUSHINT
+      25 s() PUSH
+      257 PUSHINT
+      __tact_dict_get_slice_int INLINECALLDICT
+      __tact_not_null INLINECALLDICT
+    }>ELSE<{
+      0 PUSHINT
+    }>
+    OVER
+    0 GTINT
+    IF:<{
+      21 s() 23 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 23 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 23 s() XCHG
+      16 s() 22 s() XCHG
+      s15 23 s() XCHG
+      s14 22 s() XCHG
+      s13 23 s() XCHG
+      s12 22 s() XCHG
+      s11 23 s() XCHG
+      22 s() PUSH
+      s0 s11 XCHG
+      s10 24 s() XCHG
+      s0 s9 XCHG
+      s8 24 s() XCHG
+      s0 s7 XCHG
+      s6 24 s() XCHG
+      s0 s5 XCHG
+      s4 24 s() XCHG
+      s0 s3 XCHG
+      s2 24 s() XCHG
+      s1 26 s() XCHG
+      s0 23 s() XCHG
+      25 s() PUSH
+      25 s() PUSH
+      $Presale$_fun_mapSub INLINECALLDICT
+      s0 25 s() XCHG
+      21 s() 23 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      s12 s14 XCHG
+      s11 s13 XCHG
+      s10 s12 XCHG
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s5 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+    }>
+    DUP
+    0 GTINT
+    IF:<{
+      21 s() 23 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 23 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 23 s() XCHG
+      16 s() 22 s() XCHG
+      s15 23 s() XCHG
+      s14 22 s() XCHG
+      s13 23 s() XCHG
+      s12 22 s() XCHG
+      s11 23 s() XCHG
+      s10 22 s() XCHG
+      23 s() PUSH
+      s0 s10 XCHG
+      s9 23 s() XCHG
+      s0 s8 XCHG
+      s7 23 s() XCHG
+      s0 s6 XCHG
+      s5 23 s() XCHG
+      s0 s4 XCHG
+      s3 23 s() XCHG
+      s0 s2 XCHG
+      s1 26 s() XCHG
+      s0 24 s() XCHG
+      25 s() PUSH
+      27 s() PUSH
+      $Presale$_fun_mapSub INLINECALLDICT
+      s0 25 s() XCHG
+      21 s() 23 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      s12 s14 XCHG
+      s11 s13 XCHG
+      s10 s12 XCHG
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s5 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+    }>
+    OVER
+    0 GTINT
+    IF:<{
+      22 s() 23 s() XCHG
+      21 s() 23 s() XCHG
+      20 s() 23 s() XCHG
+      19 s() 23 s() XCHG
+      18 s() 23 s() XCHG
+      17 s() 23 s() XCHG
+      16 s() 23 s() XCHG
+      s15 23 s() XCHG
+      s14 23 s() XCHG
+      s13 23 s() XCHG
+      s12 23 s() XCHG
+      s11 23 s() XCHG
+      s10 23 s() XCHG
+      s9 23 s() XCHG
+      s8 23 s() XCHG
+      s7 23 s() XCHG
+      s6 23 s() XCHG
+      s5 23 s() XCHG
+      s4 23 s() XCHG
+      s3 23 s() XCHG
+      s2 23 s() XCHG
+      s1 25 s() XCHG
+      24 s() PUSH
+      SWAP
+      s0 26 s() XCHG
+      $Presale$_fun_restoreClaimableBuyer INLINECALLDICT
+      s0 24 s() XCHG
+      21 s() 22 s() XCHG
+      20 s() 21 s() XCHG
+      19 s() 20 s() XCHG
+      18 s() 19 s() XCHG
+      17 s() 18 s() XCHG
+      16 s() 17 s() XCHG
+      s15 16 s() XCHG
+      s14 s15 XCHG
+      s13 s14 XCHG
+      s12 s13 XCHG
+      s11 s12 XCHG
+      s10 s11 XCHG
+      s9 s10 XCHG
+      s8 s9 XCHG
+      s7 s8 XCHG
+      s6 s7 XCHG
+      s5 s6 XCHG
+      s4 s5 XCHG
+      s3 s4 XCHG
+      s1 s3 s0 XCHG3
+    }>ELSE<{
+      NIP
+    }>
+    DUP
+    0 GTINT
+    IF:<{
+      s1 24 s() XCHG
+      23 s() PUSH
+      SWAP
+      $Presale$_fun_restoreClaimableReferral INLINECALLDICT
+      s0 23 s() XCHG
+    }>ELSE<{
+      DROP
+    }>
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    s14 s15 XCHG
+    s13 s14 XCHG
+    s12 s13 XCHG
+    s11 s12 XCHG
+    s10 s11 XCHG
+    s9 s10 XCHG
+    s8 s9 XCHG
+    s7 s8 XCHG
+    s6 s7 XCHG
+    s5 s6 XCHG
+    s4 s5 XCHG
+    s3 s4 XCHG
+    s1 s3 s0 XCHG3
+    s1 23 s() XCHG
+    $Presale$_fun_safeSubPendingTotal INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_clearPending INLINECALLDICT
+  }>
+  $Presale$_fun_sendJettonTo PROCREF:<{
+    10762 PUSHINT
+    23 s() PUSH
+    ISNULL
+    NOT
+    THROWANYIFNOT
+    29392 PUSHINT
+    s2 PUSH
+    0 GTINT
+    THROWANYIFNOT
+    52835 PUSHINT
+    OVER
+    0 GTINT
+    THROWANYIFNOT
+        <b b> PUSHREF // Pure Fift: "<b" creates a builder, "b>" turns it into a cell at compile time
+    TRUE
+    PUSHNULL
+        NEWC
+    260734629 PUSHINT
+    SWAP
+    32 STU
+    s1 s4 XCHG
+    64 STU
+    s0 s4 XCHG2
+        STVARUINT16
+    s0 s4 XCHG2
+        STSLICER
+        MYADDR
+        STSLICER
+        STOPTREF
+    10000000 PUSHINT
+        STVARUINT16
+        1 STI
+        STREF
+        ENDC
+    20 s() PUSH
+    __tact_not_null INLINECALLDICT
+    600000000 PUSHINT
+    ROT
+    TRUE
+    SWAP
+    $SendParameters$_constructor_to_value_bounce_body INLINECALLDICT
+        NEWC
+        b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+        1 STI               // store `bounce`
+        b{000} STSLICECONST // store bounced = false and src = addr_none
+        STSLICE             // store `to`
+        SWAP
+        STGRAMS             // store `value`
+        105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+        STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+        // → Stack state
+        // s0: Builder
+        // s1: `data`
+        // s2: `code`
+        // s3: `body`
+        // s4: `mode`
+        // Group 2: Placing the Builder after code and data, then checking those for nullability
+        s2 XCHG0
+        DUP2
+        ISNULL
+        SWAP
+        ISNULL
+        AND
+        // → Stack state
+        // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+        // s1: `code`
+        // s2: `data`
+        // s3: Builder
+        // s4: `body`
+        // s5: `mode`
+        // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+        <{
+            DROP2 // drop `data` and `code`, since either of those is null
+            b{0} STSLICECONST
+        }> PUSHCONT
+        // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+        <{
+            // _ split_depth:(Maybe (## 5))
+            //   special:(Maybe TickTock)
+            //   code:(Maybe ^Cell)
+            //   data:(Maybe ^Cell)
+            //   library:(Maybe ^Cell)
+            // = StateInit;
+            ROT                // place message Builder on top
+            b{10} STSLICECONST // store Maybe = true, Either = false
+            // Start composing inlined StateInit
+            b{00} STSLICECONST // store split_depth and special first
+            STDICT             // store code
+            STDICT             // store data
+            b{0} STSLICECONST  // store library
+        }> PUSHCONT
+        // Group 3: IFELSE that does the branching shown above
+        IFELSE
+        // → Stack state
+        // s0: Builder
+        // s1: null or StateInit
+        // s2: `body`
+        // s3: `mode`
+        // Group 4: Finalizing the message
+        STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+        ENDC
+        // → Stack state
+        // s0: Cell
+        // s1: `mode`
+        // Group 5: Sending the message, with `mode` on top
+        SWAP
+        SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+  }>
+  $MessageParameters$_constructor_bounce_to_value_mode_body PROCINLINE:<{
+    s3 s3 XCHG2
+    s0 s4 XCHG
+  }>
+  $Presale$_fun_notify PROCINLINE:<{
+    __tact_context_get_sender INLINECALLDICT
+    FALSE
+    0 PUSHINT
+    s0 s3 XCHG2
+    66 PUSHINT
+    SWAP
+    $MessageParameters$_constructor_bounce_to_value_mode_body INLINECALLDICT
+        NEWC
+        b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+        1 STI               // store `bounce`
+        b{000} STSLICECONST // store bounced = false and src = addr_none
+        STSLICE             // store `to`
+        SWAP
+        STGRAMS             // store `value`
+        106 PUSHINT         // 1 + 4 + 4 + 64 + 32 + 1
+        STZEROES
+        // → Stack state
+        // s0: Builder
+        // s1: `body`
+        // s2: `mode`
+        STDICT
+        ENDC
+        SWAP
+        SENDRAWMSG
+  }>
+  $SendParameters$_constructor_to_value_bounce_mode_body PROCINLINE:<{
+    s1 s4 XCHG
+    PUSHNULL
+    s4 s3 XCHG2
+    PUSHNULL
+    s3 s3 XCHG2
+  }>
+  $DeployOk$_constructor_queryId PROCINLINE:<{
+  }>
+  %codeVersion PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_codeVersion INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %ownerGetter PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_ownerGetter INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %jettonMasterGetter PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_jettonMasterGetter INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %totalSoldNano PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_totalSoldNano INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %totalRaisedNano PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_totalRaisedNano INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %currentRound PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_currentRound INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %currentRoundSoldNano PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_currentRoundSoldNano INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %jettonWalletSet PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_jettonWalletSet INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %jettonWallet PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_jettonWallet INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %claimableBuyerNano PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_claimableBuyerNano INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %claimableReferralNano PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_claimableReferralNano INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %totalClaimableNano PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_totalClaimableNano INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %totalPendingNano PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    $Presale$_fun_totalPendingNano INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %roundCapNanoGetter PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_roundCapNanoGetter INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %roundPriceNanoGetter PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_roundPriceNanoGetter INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %isPendingGetter PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_isPendingGetter INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %pendingUntilGetter PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_pendingUntilGetter INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  %pendingQidGetter PROC:<{
+    $Presale$_contract_load INLINECALLDICT
+    21 s() 22 s() XCHG
+    20 s() 21 s() XCHG
+    19 s() 20 s() XCHG
+    18 s() 19 s() XCHG
+    17 s() 18 s() XCHG
+    16 s() 17 s() XCHG
+    s15 16 s() XCHG
+    15 ROLL
+    $Presale$_fun_pendingQidGetter INLINECALLDICT
+    16 s() POP
+    15 BLKDROP
+    6 1 BLKDROP2
+  }>
+  recv_internal PROC:<{
+    SWAP
+    CTOS
+    2 PUSHINT
+    SDSKIPFIRST
+    1 LDI
+    1 LDI
+    LDMSGADDR
+    OVER
+    s3 s4 XCHG
+    s6 s6 XCHG2
+    4 TUPLE
+    __tact_context SETGLOB
+    s0 s2 XCHG
+    __tact_context_sender SETGLOB
+    $Presale$_contract_load INLINECALLDICT
+    s0 23 s() XCHG
+    IFJMP:<{
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      DUP
+          SBITS
+      96 LESSINT
+      IFJMP:<{
+        DROP
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        2 13 BLKSWAP
+        $Presale$_contract_store INLINECALLDICT
+      }>
+      32 LDU
+      SWAP
+      260734629 PUSHINT
+      NEQ
+      IFJMP:<{
+        DROP
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        2 13 BLKSWAP
+        $Presale$_contract_store INLINECALLDICT
+      }>
+      64 LDU
+      DROP
+      20 s() 22 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      s12 s14 XCHG
+      s11 s13 XCHG
+      s10 s12 XCHG
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s5 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+      s1 s2 XCHG
+      $Presale$_fun_restorePending INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    0 PUSHINT
+    22 s() PUSH
+    SBITS
+    DUP
+    31 GTINT
+    IF:<{
+      NIP
+      22 s() PUSH
+      32 PLDU
+      SWAP
+    }>
+    OVER
+    3101903737 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      LDMSGADDR
+      DROP
+      47989 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      22 s() PUSH
+      SDEQ
+      THROWANYIFNOT
+      4796 PUSHINT
+          MYADDR
+      s2 s(-1) PUXC
+      SDEQ
+      NOT
+      THROWANYIFNOT
+      21886 PUSHINT
+      s0 19 s() XCHG
+      ISNULL
+      s1 19 s() XCHG
+      THROWANYIFNOT
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    1464423496 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      257 PUSHINT
+      LDIX
+      DROP
+      47989 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      22 s() PUSH
+      SDEQ
+      THROWANYIFNOT
+      29392 PUSHINT
+      OVER
+      0 GTINT
+      THROWANYIFNOT
+      32846 PUSHINT
+          BALANCE FIRST
+      s2 PUSH
+      SUB
+      2120000000 PUSHINT
+      GEQ
+      THROWANYIFNOT
+      FALSE
+      1 PUSHINT
+          <b b> PUSHREF // Pure Fift: "<b" creates a builder, "b>" turns it into a cell at compile time
+      23 s() PUSH
+      4 -ROLL
+      $SendParameters$_constructor_to_value_bounce_mode_body INLINECALLDICT
+          NEWC
+          b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+          1 STI               // store `bounce`
+          b{000} STSLICECONST // store bounced = false and src = addr_none
+          STSLICE             // store `to`
+          SWAP
+          STGRAMS             // store `value`
+          105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+          STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+          // → Stack state
+          // s0: Builder
+          // s1: `data`
+          // s2: `code`
+          // s3: `body`
+          // s4: `mode`
+          // Group 2: Placing the Builder after code and data, then checking those for nullability
+          s2 XCHG0
+          DUP2
+          ISNULL
+          SWAP
+          ISNULL
+          AND
+          // → Stack state
+          // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+          // s1: `code`
+          // s2: `data`
+          // s3: Builder
+          // s4: `body`
+          // s5: `mode`
+          // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+          <{
+              DROP2 // drop `data` and `code`, since either of those is null
+              b{0} STSLICECONST
+          }> PUSHCONT
+          // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+          <{
+              // _ split_depth:(Maybe (## 5))
+              //   special:(Maybe TickTock)
+              //   code:(Maybe ^Cell)
+              //   data:(Maybe ^Cell)
+              //   library:(Maybe ^Cell)
+              // = StateInit;
+              ROT                // place message Builder on top
+              b{10} STSLICECONST // store Maybe = true, Either = false
+              // Start composing inlined StateInit
+              b{00} STSLICECONST // store split_depth and special first
+              STDICT             // store code
+              STDICT             // store data
+              b{0} STSLICECONST  // store library
+          }> PUSHCONT
+          // Group 3: IFELSE that does the branching shown above
+          IFELSE
+          // → Stack state
+          // s0: Builder
+          // s1: null or StateInit
+          // s2: `body`
+          // s3: `mode`
+          // Group 4: Finalizing the message
+          STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+          ENDC
+          // → Stack state
+          // s0: Cell
+          // s1: `mode`
+          // Group 5: Sending the message, with `mode` on top
+          SWAP
+          SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    1464489038 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      LDMSGADDR
+      257 PUSHINT
+      LDIX
+      DROP
+      47989 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      23 s() PUSH
+      SDEQ
+      THROWANYIFNOT
+      10762 PUSHINT
+      20 s() PUSH
+      ISNULL
+      NOT
+      THROWANYIFNOT
+      29392 PUSHINT
+      OVER
+      0 GTINT
+      THROWANYIFNOT
+      48656 PUSHINT
+      23 s() PUSH
+      0 EQINT
+      THROWANYIFNOT
+      59380 PUSHINT
+      24 s() PUSH
+      0 EQINT
+      THROWANYIFNOT
+      s1 22 s() XCHG
+      s0 23 s() XCHG
+      $Presale$_fun_allocQid INLINECALLDICT
+      22 s() 24 s() XCHG
+      21 s() 23 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      s12 s14 XCHG
+      s11 s13 XCHG
+      s10 s12 XCHG
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s5 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+      s1 s2 XCHG
+      $Presale$_fun_sendJettonTo INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    2390954843 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      LDMSGADDR
+      257 PUSHINT
+      LDIX
+      DROP
+      39897 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      23 s() PUSH
+      SDEQ
+      IF:<{
+        TRUE
+      }>ELSE<{
+        __tact_context_get_sender INLINECALLDICT
+        s3 PUSH
+        SDEQ
+      }>
+      THROWANYIFNOT
+      20 s() 21 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 21 s() XCHG
+      17 s() 21 s() XCHG
+      16 s() 21 s() XCHG
+      s15 21 s() XCHG
+      s14 21 s() XCHG
+      s13 21 s() XCHG
+      s12 21 s() XCHG
+      s11 21 s() XCHG
+      s10 21 s() XCHG
+      s9 21 s() XCHG
+      s8 21 s() XCHG
+      s7 21 s() XCHG
+      s6 21 s() XCHG
+      s5 21 s() XCHG
+      s4 21 s() XCHG
+      s3 21 s() XCHG
+      s2 21 s() XCHG
+      s1 21 s() XCHG
+      s0 22 s() XCHG
+      36337 PUSHINT
+      s0 24 s() XCHG
+      22 s() PUSH
+      $Presale$_fun_isPending INLINECALLDICT
+      s1 25 s() XCHG
+      THROWANYIFNOT
+      27218 PUSHINT
+          NOW
+      21 s() 22 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 22 s() XCHG
+      16 s() 22 s() XCHG
+      s15 22 s() XCHG
+      s14 22 s() XCHG
+      s13 22 s() XCHG
+      s12 22 s() XCHG
+      s11 22 s() XCHG
+      s10 22 s() XCHG
+      s9 22 s() XCHG
+      s8 22 s() XCHG
+      s7 22 s() XCHG
+      s6 22 s() XCHG
+      s5 22 s() XCHG
+      s4 22 s() XCHG
+      s3 22 s() XCHG
+      s2 22 s() XCHG
+      s1 22 s() XCHG
+      s0 25 s() XCHG
+      23 s() PUSH
+      $Presale$_fun_pendingUntil INLINECALLDICT
+      s1 26 s() XCHG
+      GREATER
+      s1 22 s() XCHG
+      THROWANYIFNOT
+      26941 PUSHINT
+      s0 23 s() XCHG
+      2 EQINT
+      s1 23 s() XCHG
+      THROWANYIFNOT
+      18 s() 22 s() XCHG
+      17 s() 21 s() XCHG
+      16 s() 20 s() XCHG
+      s15 19 s() XCHG
+      s14 18 s() XCHG
+      s13 17 s() XCHG
+      s12 16 s() XCHG
+      4 12 BLKSWAP
+      s3 s3 s0 XCHG3
+      $Presale$_fun_pendingQid INLINECALLDICT
+      $Presale$_fun_restorePending INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    1112889602 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+                  b{00} SDBEGINSQ
+                  IF:<{
+                    PUSHNULL
+                  }>ELSE<{
+                    LDMSGADDR
+                    SWAP
+                  }>
+      NIP
+      DUP
+      ISNULL
+      NOT
+      IF:<{
+        DUP
+        __tact_not_null INLINECALLDICT
+        __tact_context_get_sender INLINECALLDICT
+        SDEQ
+      }>ELSE<{
+        FALSE
+      }>
+      IF:<{
+        DROP
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        2 13 BLKSWAP
+        PUSHNULL
+        $Presale$_fun_processBuy INLINECALLDICT
+      }>ELSE<{
+        20 s() 22 s() XCHG
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        s12 s14 XCHG
+        s11 s13 XCHG
+        s10 s12 XCHG
+        s9 s11 XCHG
+        s8 s10 XCHG
+        s7 s9 XCHG
+        s6 s8 XCHG
+        s5 s7 XCHG
+        s4 s6 XCHG
+        s3 s5 XCHG
+        s4 s3 s0 XCHG3
+        s1 s2 XCHG
+        $Presale$_fun_processBuy INLINECALLDICT
+      }>
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    1129070921 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      21 s() POP
+      10762 PUSHINT
+      18 s() PUSH
+      ISNULL
+      NOT
+      THROWANYIFNOT
+      8654 PUSHINT
+      __tact_context_get INLINECALLDICT
+      $Context$_get_value INLINECALLDICT
+      700000000 PUSHINT
+      GEQ
+      THROWANYIFNOT
+      5025 PUSHINT
+          BALANCE FIRST
+      900000000 PUSHINT
+      GEQ
+      THROWANYIFNOT
+      __tact_context_get_sender INLINECALLDICT
+      20 s() 21 s() XCHG
+      19 s() 20 s() XCHG
+      18 s() 19 s() XCHG
+      17 s() 18 s() XCHG
+      16 s() 17 s() XCHG
+      s15 16 s() XCHG
+      s14 s15 XCHG
+      s13 s14 XCHG
+      s12 s13 XCHG
+      s11 s12 XCHG
+      s10 s11 XCHG
+      s9 s10 XCHG
+      s8 s9 XCHG
+      s7 s8 XCHG
+      s6 s7 XCHG
+      s5 s6 XCHG
+      s4 s5 XCHG
+      s3 s4 XCHG
+      s0 22 s() XCHG
+      s1 s3 s0 XCHG3
+      22 s() PUSH
+      $Presale$_fun_cleanupExpiredPending INLINECALLDICT
+      20 s() 21 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 21 s() XCHG
+      17 s() 21 s() XCHG
+      16 s() 21 s() XCHG
+      s15 21 s() XCHG
+      s14 21 s() XCHG
+      s13 21 s() XCHG
+      s12 21 s() XCHG
+      s11 21 s() XCHG
+      s10 21 s() XCHG
+      s9 21 s() XCHG
+      s0 21 s() XCHG
+      s0 s8 XCHG
+      s0 s7 XCHG
+      s0 s6 XCHG
+      5 -ROLL
+      35582 PUSHINT
+      s0 22 s() XCHG
+      23 s() PUSH
+      $Presale$_fun_isPending INLINECALLDICT
+      NOT
+      s1 23 s() XCHG
+      THROWANYIFNOT
+      20 s() 21 s() XCHG
+      19 s() 20 s() XCHG
+      18 s() 19 s() XCHG
+      17 s() 18 s() XCHG
+      16 s() 17 s() XCHG
+      s15 16 s() XCHG
+      s14 s15 XCHG
+      s11 PUSH
+      s14 s15 XCHG
+      s0 s13 XCHG
+      s0 s14 XCHG
+      12 ROLL
+      23 s() PUSH
+      $Presale$_fun_mapGetOr0 INLINECALLDICT
+      21 s() 22 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 22 s() XCHG
+      16 s() 22 s() XCHG
+      s15 22 s() XCHG
+      s14 22 s() XCHG
+      s13 22 s() XCHG
+      s12 22 s() XCHG
+      22 s() PUSH
+      12 -ROLL
+      s0 23 s() XCHG
+      24 s() PUSH
+      $Presale$_fun_mapGetOr0 INLINECALLDICT
+      21 s() 22 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 22 s() XCHG
+      16 s() 22 s() XCHG
+      s15 22 s() XCHG
+      s14 22 s() XCHG
+      s13 22 s() XCHG
+      s12 22 s() XCHG
+      s11 22 s() XCHG
+      22 s() PUSH
+      11 -ROLL
+      s0 23 s() XCHG
+      25 s() PUSH
+      $Presale$_fun_mapGetOr0 INLINECALLDICT
+      21 s() 22 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 22 s() XCHG
+      16 s() 22 s() XCHG
+      s15 22 s() XCHG
+      s14 22 s() XCHG
+      s13 22 s() XCHG
+      s12 22 s() XCHG
+      s11 22 s() XCHG
+      s10 22 s() XCHG
+      22 s() PUSH
+      10 -ROLL
+      s0 23 s() XCHG
+      26 s() PUSH
+      $Presale$_fun_mapGetOr0 INLINECALLDICT
+      s1 25 s() XCHG
+      s0 23 s() XCHG
+      SUB
+      s1 23 s() XCHG
+      s0 22 s() XCHG
+      SUB
+      21 s() PUSH
+      0 LESSINT
+      IF:<{
+        0 PUSHINT
+        22 s() POP
+      }>
+      DUP
+      0 LESSINT
+      IF:<{
+        DROP
+        0 PUSHINT
+      }>
+      21 s() PUSH
+      OVER
+      ADD
+      21744 PUSHINT
+      OVER
+      0 GTINT
+      THROWANYIFNOT
+      41005 PUSHINT
+      24 s() PUSH
+      s2 PUSH
+      GEQ
+      THROWANYIFNOT
+      s1 23 s() XCHG
+      s0 24 s() XCHG
+      $Presale$_fun_allocQid INLINECALLDICT
+      21 s() 22 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 22 s() XCHG
+      16 s() 22 s() XCHG
+      s15 22 s() XCHG
+      s14 22 s() XCHG
+      s13 22 s() XCHG
+      s12 22 s() XCHG
+      s11 22 s() XCHG
+      s10 22 s() XCHG
+      s9 22 s() XCHG
+      s0 22 s() XCHG
+      s0 s8 XCHG
+      s0 s7 XCHG
+      s0 s6 XCHG
+      5 -ROLL
+      26 s() PUSH
+      26 s() PUSH
+      25 s() PUSH
+      27 s() PUSH
+      26 s() PUSH
+      $Presale$_fun_setPending INLINECALLDICT
+      SWAP
+      25 s() PUSH
+      SUB
+      SWAP
+      25 s() PUSH
+      ADD
+      21 s() 22 s() XCHG
+      20 s() 21 s() XCHG
+      19 s() 20 s() XCHG
+      18 s() 19 s() XCHG
+      17 s() 18 s() XCHG
+      16 s() 17 s() XCHG
+      s15 16 s() XCHG
+      s14 s15 XCHG
+      s10 PUSH
+      s14 s15 XCHG
+      s13 s14 XCHG
+      s0 s12 XCHG
+      s0 s13 XCHG
+      s10 s11 XCHG
+      s9 s10 XCHG
+      s8 s9 XCHG
+      s7 s8 XCHG
+      s6 s7 XCHG
+      s5 s6 XCHG
+      s4 s5 XCHG
+      s3 s4 XCHG
+      s1 s3 s0 XCHG3
+      27 s() PUSH
+      SWAP
+      s0 25 s() XCHG
+      $Presale$_fun_mapAdd INLINECALLDICT
+      21 s() 22 s() XCHG
+      20 s() 21 s() XCHG
+      19 s() 20 s() XCHG
+      18 s() 19 s() XCHG
+      17 s() 18 s() XCHG
+      16 s() 17 s() XCHG
+      s15 16 s() XCHG
+      s14 s15 XCHG
+      s9 PUSH
+      s14 s15 XCHG
+      s13 s14 XCHG
+      s12 s13 XCHG
+      s0 s11 XCHG
+      s0 s12 XCHG
+      s9 s10 XCHG
+      s8 s9 XCHG
+      s7 s8 XCHG
+      s6 s7 XCHG
+      s5 s6 XCHG
+      s4 s5 XCHG
+      s3 s4 XCHG
+      s1 s3 s0 XCHG3
+      26 s() PUSH
+      SWAP
+      s0 25 s() XCHG
+      $Presale$_fun_mapAdd INLINECALLDICT
+      s0 s14 XCHG
+      267 PUSHINT
+      25 s() PUSH
+      0 PUSHINT
+      257 PUSHINT
+      __tact_dict_set_slice_int INLINECALLDICT
+      s0 s13 XCHG
+      267 PUSHINT
+      25 s() PUSH
+      0 PUSHINT
+      257 PUSHINT
+      __tact_dict_set_slice_int INLINECALLDICT
+      21 s() 24 s() XCHG
+      20 s() 23 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 21 s() XCHG
+      17 s() 20 s() XCHG
+      16 s() 19 s() XCHG
+      s15 18 s() XCHG
+      s13 17 s() XCHG
+      s0 16 s() XCHG
+      s12 s15 XCHG
+      s11 s14 XCHG
+      s10 s13 XCHG
+      s9 s12 XCHG
+      s8 s11 XCHG
+      s7 s10 XCHG
+      s6 s9 XCHG
+      s5 s8 XCHG
+      s4 s7 XCHG
+      s3 s6 XCHG
+      s5 s4 s0 XCHG3
+      s2 s3 XCHG
+      $Presale$_fun_sendJettonTo INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    4129785881 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      21 s() POP
+      __tact_context_get_sender INLINECALLDICT
+      s0 21 s() XCHG
+      36337 PUSHINT
+      s0 23 s() XCHG
+      22 s() PUSH
+      $Presale$_fun_isPending INLINECALLDICT
+      s1 24 s() XCHG
+      THROWANYIFNOT
+      27218 PUSHINT
+          NOW
+      21 s() 22 s() XCHG
+      20 s() 22 s() XCHG
+      19 s() 22 s() XCHG
+      18 s() 22 s() XCHG
+      17 s() 22 s() XCHG
+      16 s() 22 s() XCHG
+      s15 22 s() XCHG
+      s14 22 s() XCHG
+      s13 22 s() XCHG
+      s12 22 s() XCHG
+      s11 22 s() XCHG
+      s10 22 s() XCHG
+      s9 22 s() XCHG
+      s8 22 s() XCHG
+      s7 22 s() XCHG
+      s6 22 s() XCHG
+      s5 22 s() XCHG
+      s4 22 s() XCHG
+      s3 22 s() XCHG
+      s2 22 s() XCHG
+      s1 22 s() XCHG
+      s0 24 s() XCHG
+      23 s() PUSH
+      $Presale$_fun_pendingUntil INLINECALLDICT
+      s1 25 s() XCHG
+      GREATER
+      s1 22 s() XCHG
+      THROWANYIFNOT
+      19 s() 22 s() XCHG
+      18 s() 21 s() XCHG
+      17 s() 20 s() XCHG
+      16 s() 19 s() XCHG
+      s15 18 s() XCHG
+      s14 17 s() XCHG
+      s13 16 s() XCHG
+      s12 s15 XCHG
+      3 12 BLKSWAP
+      $Presale$_fun_pendingQid INLINECALLDICT
+      $Presale$_fun_commitPending INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    1935855772 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      64 LDU
+      DROP
+      18 s() PUSH
+      ISNULL
+      IFJMP:<{
+        DROP
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        2 13 BLKSWAP
+        $Presale$_contract_store INLINECALLDICT
+      }>
+      __tact_context_get_sender INLINECALLDICT
+      19 s() PUSH
+      __tact_not_null INLINECALLDICT
+      SDEQ
+      NOT
+      IFJMP:<{
+        DROP
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        2 13 BLKSWAP
+        $Presale$_contract_store INLINECALLDICT
+      }>
+      20 s() 22 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      s12 s14 XCHG
+      s11 s13 XCHG
+      s10 s12 XCHG
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s5 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+      s1 s2 XCHG
+      $Presale$_fun_commitPending INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    3576854235 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      64 LDU
+      DROP
+      18 s() PUSH
+      ISNULL
+      IFJMP:<{
+        DROP
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        2 13 BLKSWAP
+        $Presale$_contract_store INLINECALLDICT
+      }>
+      __tact_context_get_sender INLINECALLDICT
+      19 s() PUSH
+      __tact_not_null INLINECALLDICT
+      SDEQ
+      NOT
+      IFJMP:<{
+        DROP
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        2 13 BLKSWAP
+        $Presale$_contract_store INLINECALLDICT
+      }>
+      20 s() 22 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      s12 s14 XCHG
+      s11 s13 XCHG
+      s10 s12 XCHG
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s5 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+      s1 s2 XCHG
+      $Presale$_fun_commitPending INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    OVER
+    2490013878 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s0 21 s() XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      64 LDU
+      DROP
+      $DeployOk$_constructor_queryId INLINECALLDICT
+      NEWC
+      $DeployOk$_store_cell INLINECALLDICT
+      20 s() 22 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      s12 s14 XCHG
+      s11 s13 XCHG
+      s10 s12 XCHG
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s5 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+      s1 s2 XCHG
+      $Presale$_fun_notify INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    SWAP
+    0 EQINT
+    SWAP
+    33 LESSINT
+    AND
+    IFJMP:<{
+      21 s() POP
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+      PUSHNULL
+      $Presale$_fun_processBuy INLINECALLDICT
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    __tact_context_get_sender INLINECALLDICT
+    __tact_context_get INLINECALLDICT
+    $Context$_get_value INLINECALLDICT
+    23 s() PUSH
+        SBITS
+    32 LESSINT
+    IFJMP:<{
+      23 s() POP
+      22 s() PUSH
+      0 GTINT
+      IF:<{
+        21 s() 23 s() XCHG
+        20 s() 22 s() XCHG
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        s12 s14 XCHG
+        s11 s13 XCHG
+        s10 s12 XCHG
+        s9 s11 XCHG
+        s8 s10 XCHG
+        s7 s9 XCHG
+        s6 s8 XCHG
+        s5 s7 XCHG
+        s4 s6 XCHG
+        s3 s5 XCHG
+        s4 s0 s3 XCHG3
+        s0 s2 XCHG
+        $Presale$_fun_refundAll INLINECALLDICT
+        s0 21 s() XCHG
+        s1 20 s() XCHG
+        s0 19 s() XCHG
+        s1 18 s() XCHG
+        s0 17 s() XCHG
+        s1 16 s() XCHG
+        s0 s15 XCHG
+        13 2 BLKSWAP
+      }>ELSE<{
+        DROP
+        21 s() POP
+      }>
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    s0 23 s() XCHG
+    32 LDU
+    SWAP
+    1112889601 PUSHINT
+    NEQ
+    IFJMP:<{
+      DROP
+      22 s() PUSH
+      0 GTINT
+      IF:<{
+        21 s() 23 s() XCHG
+        20 s() 22 s() XCHG
+        19 s() 21 s() XCHG
+        18 s() 20 s() XCHG
+        17 s() 19 s() XCHG
+        16 s() 18 s() XCHG
+        s15 17 s() XCHG
+        s14 16 s() XCHG
+        s13 s15 XCHG
+        s12 s14 XCHG
+        s11 s13 XCHG
+        s10 s12 XCHG
+        s9 s11 XCHG
+        s8 s10 XCHG
+        s7 s9 XCHG
+        s6 s8 XCHG
+        s5 s7 XCHG
+        s4 s6 XCHG
+        s3 s5 XCHG
+        s4 s0 s3 XCHG3
+        s0 s2 XCHG
+        $Presale$_fun_refundAll INLINECALLDICT
+        s0 21 s() XCHG
+        s1 20 s() XCHG
+        s0 19 s() XCHG
+        s1 18 s() XCHG
+        s0 17 s() XCHG
+        s1 16 s() XCHG
+        s0 s15 XCHG
+        13 2 BLKSWAP
+      }>ELSE<{
+        DROP
+        21 s() POP
+      }>
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+      $Presale$_contract_store INLINECALLDICT
+    }>
+    23 s() POP
+    PUSHNULL
+    23 s() PUSH
+        SBITS
+    0 GTINT
+    IF:<{
+      s0 23 s() XCHG
+          1 LDI
+      SWAP
+      IF:<{
+        DUP
+            SBITS
+        267 PUSHINT
+        GEQ
+        IF:<{
+          23 s() POP
+          s0 22 s() XCHG
+              LDMSGADDR
+          DROP
+          s0 22 s() XCHG
+        }>ELSE<{
+          DROP
+        }>
+      }>ELSE<{
+        DROP
+      }>
+    }>ELSE<{
+      23 s() POP
+    }>
+    22 s() PUSH
+    ISNULL
+    NOT
+    IF:<{
+      22 s() PUSH
+      __tact_not_null INLINECALLDICT
+      SWAP
+      SDEQ
+    }>ELSE<{
+      DROP
+      FALSE
+    }>
+    IF:<{
+      21 s() POP
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+      PUSHNULL
+      $Presale$_fun_processBuy INLINECALLDICT
+    }>ELSE<{
+      20 s() 22 s() XCHG
+      19 s() 21 s() XCHG
+      18 s() 20 s() XCHG
+      17 s() 19 s() XCHG
+      16 s() 18 s() XCHG
+      s15 17 s() XCHG
+      s14 16 s() XCHG
+      s13 s15 XCHG
+      2 13 BLKSWAP
+      $Presale$_fun_processBuy INLINECALLDICT
+    }>
+    $Presale$_contract_store INLINECALLDICT
+  }>
+  __tact_selector_hack PROC:<{
+    @atend @ 1 {
+            execute current@ context@ current!
+            {
+                // The core idea of this function is to save gas by avoiding unnecessary dict jump, when recv_internal/recv_external is called
+                // We want to extract recv_internal/recv_external from the dict and select needed function
+                // not by jumping to the needed function by it's index, but by using usual IF statements.
+                }END> b> // Close previous builder, now we have a cell of previous code on top of the stack
+                <{ // Start of the new code builder
+                    SETCP0
+                    // Swap the new code builder with the previous code, now we have previous code on top of the stack
+                    swap
+                    // Transform cell to slice and load first ref from the previous code, now we have the dict on top of the stack
+                    <s ref@
+                    // Extract the recv_internal from the dict
+                    dup 0 swap @procdictkeylen idict@ { "internal shortcut error" abort } ifnot
+                    swap
+                    // Delete the recv_internal from the dict
+                    0 swap @procdictkeylen idict- drop
+                    // Delete the recv_external from the dict (it's okay if it's not there)
+                    -1 swap @procdictkeylen idict- drop
+                    // Delete the __tact_selector_hack from the dict
+                    65535 swap @procdictkeylen idict- drop
+                    // Bring the code builder from the bottom of the stack
+                    // because if recv_external extraction is optional, and the number of elements on the stack is not fixed
+                    depth 1- roll
+                    // Swap with the dict from which we extracted recv_internal and (maybe) recv_external
+                    swap
+                    // Check if the dict is empty
+                    dup null?
+                    // Store a copy of this flag in the bottom of the stack
+                    dup depth 1- -roll
+                    {
+                        // If the dict is empty, just drop it (it will be null if it's empty)
+                        drop
+                    }
+                    {
+                        // If the dict is not empty, prepare continuation to be stored in c3
+                        <{
+                            // Save this dict as first ref in this continuation, it will be pushed in runtime by DICTPUSHCONST
+                            swap @procdictkeylen DICTPUSHCONST
+                            // Jump to the needed function by it's index
+                            DICTIGETJMPZ
+                            // If such key is not found, throw 11 along with the key as an argument
+                            11 THROWARG
+                        }> PUSHCONT
+                        // Store the continuation in c3
+                        c3 POP
+                    } cond
+                    // Function id is on top of the (runtime) stack
+                    DUP IFNOTJMP:<{
+                        // place recv_internal here
+                        DROP swap @addop
+                    }>
+                    // Bring back the flag, indicating if the dict is empty or not from the bottom of the stack
+                    depth 1- roll
+                    {
+                        // If the dict is empty, throw 11
+                        11 THROWARG
+                    }
+                    {
+                        // If the dict is not empty, jump to continuation from c3
+                        c3 PUSH JMPX
+                    } cond
+                }> b>
+            } : }END>c
+            current@ context! current!
+        } does @atend !
+  }>
+}END>c
