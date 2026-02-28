@@ -2,6 +2,7 @@ import { toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
 import { mustAddr, CFG } from "./config";
+import { assertTestnet } from "./safety";
 
 /**
  * Legacy deploy script (kept for compatibility).
@@ -12,6 +13,7 @@ import { mustAddr, CFG } from "./config";
  * - Does NOT upsert .env (use deploy.ts if you want auto-write)
  */
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "deployPresale");
   const owner = mustAddr("OWNER");
   const jettonMaster = mustAddr("JETTON_MASTER");
 
@@ -25,5 +27,5 @@ export async function run(provider: NetworkProvider) {
   // eslint-disable-next-line no-console
   console.log("✅ Presale deployed at:", presale.address.toString());
   // eslint-disable-next-line no-console
-  console.log("ℹ️  Current ENV PRESALE (from config):", CFG.PRESALE.toString());
+  console.log("ℹ️  Current ENV PRESALE (from config):", CFG.PRESALE?.toString() ?? "(not set)");
 }

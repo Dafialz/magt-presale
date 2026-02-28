@@ -3,6 +3,7 @@ import { beginCell, toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
 import { CFG } from "./config";
+import { assertTestnet } from "./safety";
 
 /**
  * WITHDRAW TON (owner only)
@@ -24,12 +25,14 @@ function buildWithdrawPayload(amountNano: bigint) {
 }
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "withdraw");
   loadEnv();
 
   const presale =
     envMaybeAddress("PRESALE_ADDRESS") ??
     envMaybeAddress("PRESALE") ??
     CFG.PRESALE;
+  if (!presale) throw new Error("Missing PRESALE address (PRESALE_ADDRESS or PRESALE)");
 
   const owner = envMaybeAddress("OWNER") ?? CFG.OWNER;
   if (!owner) throw new Error("OWNER is missing in .env (OWNER=EQ...)");

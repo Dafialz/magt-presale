@@ -4,14 +4,17 @@ import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
 import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
 import { CFG } from "./config";
+import { assertTestnet } from "./safety";
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "resolvePending");
   loadEnv();
 
   const presaleAddr =
     envMaybeAddress("PRESALE_ADDRESS") ??
     envMaybeAddress("PRESALE") ??
     CFG.PRESALE;
+  if (!presaleAddr) throw new Error("Missing PRESALE address (PRESALE_ADDRESS or PRESALE)");
 
   const connected = provider.sender().address;
   if (!connected) throw new Error("Provider sender address is not available");

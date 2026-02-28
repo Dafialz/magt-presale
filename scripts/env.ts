@@ -4,23 +4,34 @@ import * as fs from "fs";
 import * as path from "path";
 
 // -----------------------------
-// Load .env with a clear log
+// Load env files with safe fallback order
 // -----------------------------
 export function loadEnv(): string | undefined {
   // Do not re-load if already loaded in this process
-  if ((globalThis as any).__ENV_LOADED) return undefined;
+  if ((globalThis as any).__ENV_LOADED) return (globalThis as any).__ENV_LOADED_PATH;
 
-  const envPath = path.resolve(process.cwd(), ".env");
-  if (fs.existsSync(envPath)) {
-    dotenv.config({ path: envPath });
-    console.log(`✅ Loaded .env from: ${envPath}`);
-    (globalThis as any).__ENV_LOADED = true;
-    return envPath;
-  } else {
-    console.warn(`⚠️ .env not found at: ${envPath}`);
-    (globalThis as any).__ENV_LOADED = true;
-    return undefined;
+  const cwd = process.cwd();
+  const candidates = [
+    path.resolve(cwd, ".env.local"),
+    path.resolve(cwd, ".env"),
+  ];
+
+  for (const envPath of candidates) {
+    if (fs.existsSync(envPath)) {
+      dotenv.config({ path: envPath });
+      console.log(`✅ Loaded env from: ${envPath}`);
+      (globalThis as any).__ENV_LOADED = true;
+      (globalThis as any).__ENV_LOADED_PATH = envPath;
+      return envPath;
+    }
   }
+
+  console.warn(
+    `⚠️ No .env.local or .env found in ${cwd}. Using process env only (safe for CI without secrets).`
+  );
+  (globalThis as any).__ENV_LOADED = true;
+  (globalThis as any).__ENV_LOADED_PATH = undefined;
+  return undefined;
 }
 
 // -----------------------------
@@ -54,7 +65,6 @@ export function envBool(key: string, def?: boolean): boolean {
   throw new Error(`Env ${key} is not a valid boolean: "${raw}" (use true/false or 1/0)`);
 }
 
-// ✅ Added: envInt
 export function envInt(
   key: string,
   opts?: { defaultValue?: string; min?: number; max?: number; required?: boolean }
@@ -101,7 +111,6 @@ export function envNanoFromTonStr(key: string, defTon?: string): bigint {
   return BigInt(Math.floor(n * 1e9));
 }
 
-// ✅ Added: parseJettonToNano (human -> nano bigint)
 export function parseJettonToNano(human: string, decimals: number): bigint {
   const t = (human ?? "").trim();
   if (!t) throw new Error("Empty jetton amount");
@@ -119,7 +128,6 @@ export function parseJettonToNano(human: string, decimals: number): bigint {
   return a + b;
 }
 
-// ✅ Added: upsertEnvKey (update .env safely)
 export function upsertEnvKey(filePath: string, key: string, value: string): void {
   const k = key.trim();
   if (!k) throw new Error("upsertEnvKey: empty key");
@@ -132,7 +140,6 @@ export function upsertEnvKey(filePath: string, key: string, value: string): void
   try {
     content = fs.readFileSync(filePath, "utf8");
   } catch {
-    // file may not exist yet -> create
     fs.writeFileSync(filePath, line + "\n", "utf8");
     return;
   }
@@ -150,7 +157,6 @@ export function upsertEnvKey(filePath: string, key: string, value: string): void
   }
 
   if (!replaced) {
-    // keep file clean: ensure ends with newline
     if (lines.length && lines[lines.length - 1] !== "") lines.push("");
     lines.push(line);
     lines.push("");

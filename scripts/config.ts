@@ -82,33 +82,38 @@ export const CFG = (() => {
    * Accepted env var names:
    *   PRESALE_ADDRESS / PRESALE / PRESALE_CONTRACT
    */
+  const allowMissingPresale = strFromEnv("ALLOW_MISSING_PRESALE", "") === "1";
   const presaleHit = firstNonEmptyEnv([
     "PRESALE_ADDRESS",
     "PRESALE",
     "PRESALE_CONTRACT",
   ]);
-  if (!presaleHit) {
-    throw new Error(
-      [
-        "Missing presale address.",
-        "Set one of: PRESALE_ADDRESS / PRESALE / PRESALE_CONTRACT in your .env",
-        "Example:",
-        "  PRESALE_ADDRESS=EQ....",
-      ].join("\n")
-    );
-  }
 
-  const presaleNormalized = normalizeFriendlyAddr(presaleHit.value);
-  let PRESALE: Address;
-  try {
-    PRESALE = Address.parse(presaleNormalized);
-  } catch (e: any) {
-    throw new Error(
-      `Invalid presale address in ${presaleHit.name}\n` +
-        `RAW:        ${presaleHit.value}\n` +
-        `NORMALIZED: ${presaleNormalized}\n` +
-        `Error: ${e?.message ?? String(e)}`
-    );
+  let PRESALE: Address | null = null;
+  if (!presaleHit) {
+    if (!allowMissingPresale) {
+      throw new Error(
+        [
+          "Missing presale address.",
+          "Set one of: PRESALE_ADDRESS / PRESALE / PRESALE_CONTRACT in your .env",
+          "Example:",
+          "  PRESALE_ADDRESS=EQ....",
+          "(or set ALLOW_MISSING_PRESALE=1 only for deploy flows)",
+        ].join("\n")
+      );
+    }
+  } else {
+    const presaleNormalized = normalizeFriendlyAddr(presaleHit.value);
+    try {
+      PRESALE = Address.parse(presaleNormalized);
+    } catch (e: any) {
+      throw new Error(
+        `Invalid presale address in ${presaleHit.name}\n` +
+          `RAW:        ${presaleHit.value}\n` +
+          `NORMALIZED: ${presaleNormalized}\n` +
+          `Error: ${e?.message ?? String(e)}`
+      );
+    }
   }
 
   // Toncenter: allow either TONCENTER_API (base) or TONCENTER_JSONRPC (full)
