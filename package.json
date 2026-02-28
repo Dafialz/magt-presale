@@ -9,10 +9,14 @@
   "scripts": {
     "test": "npm run build && tsc --noEmit && ts-node tests/Presale.spec.ts && ts-node tests/Presale.e2e.spec.ts",
     "build": "blueprint build Presale",
-    "ci": "npm run build && npm run test && npm run lint --if-present",
+    "ci": "npm run test:all && npm run lint --if-present",
     "deploy:testnet": "blueprint run deploy --testnet",
     "deploy:mainnet": "blueprint run deploy",
-    "check": "blueprint run check --testnet"
+    "check": "blueprint run check --testnet",
+    "test:unit": "npm run build && tsc --noEmit && ts-node tests/Presale.spec.ts",
+    "test:e2e": "npm run build && ts-node tests/Presale.e2e.spec.ts",
+    "test:all": "npm run build && tsc --noEmit && ts-node tests/Presale.spec.ts && ts-node tests/Presale.e2e.spec.ts",
+    "test:testnet": "powershell -ExecutionPolicy Bypass -File .\\runbook-buy-testnet.ps1"
   },
   "keywords": [],
   "author": "",
