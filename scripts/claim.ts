@@ -2,6 +2,7 @@ import { Address, toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
 import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
+import { assertTestnet } from "./safety";
 
 function prettyErr(e: any): string {
   return (
@@ -13,6 +14,7 @@ function prettyErr(e: any): string {
 }
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "claim");
   loadEnv();
 
   const presaleStr = envMaybeStr("PRESALE") || envMaybeStr("PRESALE_ADDRESS");

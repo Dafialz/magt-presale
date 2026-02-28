@@ -4,6 +4,7 @@ import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
 import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
 import { CFG } from "./config";
+import { assertTestnet } from "./safety";
 
 /**
  * BUY script for Presale.tact
@@ -128,6 +129,7 @@ function buildManualBuyPayload(ref?: Address | null): Cell {
 }
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "buy");
   loadEnv();
 
   const presaleAddr =

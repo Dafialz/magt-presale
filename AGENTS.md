@@ -98,3 +98,23 @@ npm run check
 
 Do **not** run `npm run deploy:mainnet` unless explicitly intended and reviewed.
 
+## 9) Transaction safety rails (enforced in scripts)
+
+For any script that sends a transaction (`deploy`, `buy`, `claim`, `withdraw`, etc.), the code now enforces:
+- testnet execution (`--testnet`) **or** `NETWORK=testnet`,
+- otherwise it aborts with a clear safety error,
+- unless you explicitly set `I_UNDERSTAND_MAINNET=1`.
+
+Examples:
+
+```bash
+# normal safe mode
+npx blueprint run buy --testnet
+
+# explicit env-based safe mode
+NETWORK=testnet npx blueprint run claim
+
+# dangerous override (intentional non-testnet only)
+I_UNDERSTAND_MAINNET=1 npx blueprint run deploy
+```
+

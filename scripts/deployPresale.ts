@@ -2,6 +2,7 @@ import { toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
 import { mustAddr, CFG } from "./config";
+import { assertTestnet } from "./safety";
 
 /**
  * Legacy deploy script (kept for compatibility).
@@ -12,6 +13,7 @@ import { mustAddr, CFG } from "./config";
  * - Does NOT upsert .env (use deploy.ts if you want auto-write)
  */
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "deployPresale");
   const owner = mustAddr("OWNER");
   const jettonMaster = mustAddr("JETTON_MASTER");
 

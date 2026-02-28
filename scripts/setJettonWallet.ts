@@ -3,6 +3,7 @@ import { Address, toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
 import { CFG } from "./config";
+import { assertTestnet } from "./safety";
 import { loadEnv, envMaybeAddress } from "./env";
 
 function parseAddr(label: string, raw?: string): Address {
@@ -26,6 +27,7 @@ function prettyErr(e: any): string {
 }
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "setJettonWallet");
   // load .env (safe even if it doesn't exist)
   try {
     loadEnv();

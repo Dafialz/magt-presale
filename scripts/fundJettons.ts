@@ -11,6 +11,7 @@ import {
   envMaybeAddress,
   parseJettonToNano,
 } from "./env";
+import { assertTestnet } from "./safety";
 
 /**
  * fundJettons
@@ -131,6 +132,7 @@ function parseTonToNano(s: string): bigint {
 }
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "fundJettons");
   const loaded = loadEnv();
   if (loaded) console.log(`✅ Loaded .env from: ${loaded}`);
 

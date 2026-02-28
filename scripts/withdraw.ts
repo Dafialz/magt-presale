@@ -3,6 +3,7 @@ import { beginCell, toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
 import { CFG } from "./config";
+import { assertTestnet } from "./safety";
 
 /**
  * WITHDRAW TON (owner only)
@@ -24,6 +25,7 @@ function buildWithdrawPayload(amountNano: bigint) {
 }
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "withdraw");
   loadEnv();
 
   const presale =
