@@ -113,10 +113,9 @@ contract Presale with Deployable {
   // qid generator (unique per outgoing jetton transfer)
   nextQid_: Int;
 
-  // qid -> user
-  // FIX #2: userByQid_ must be cleaned up on commit/restore to prevent unbounded storage growth
-  // ✅ FIX: must be Address? if you want to store null for cleanup
-  userByQid_: map<Int, Address?>;
+  // qid -> user + explicit presence flag (Tact map values cannot be optional)
+  userByQid_: map<Int, Address>;
+  userByQidPresent_: map<Int, Int>; // 1=active, 0=cleared
 
   // totals
   totalClaimableNano_: Int; // nanojettons
@@ -127,7 +126,7 @@ contract Presale with Deployable {
   // =============================
 
   // IMPORTANT: bump this to force NEW contract address on deploy (code hash changes)
-  const CODE_VERSION: Int = 15; // bumped after presaleEnabled + userByQid_ fix
+  const CODE_VERSION: Int = 16; // bumped after userByQid_ optional-map removal
 
   const OP_JETTON_TRANSFER: Int = 0x0f8a7ea5; // JettonWallet::transfer opcode
 
@@ -198,6 +197,7 @@ contract Presale with Deployable {
 
     self.nextQid_ = 1;
     self.userByQid_ = emptyMap();
+    self.userByQidPresent_ = emptyMap();
 
     self.totalClaimableNano_ = 0;
     self.totalPendingNano_ = 0;
@@ -646,6 +646,7 @@ contract Presale with Deployable {
     self.pendingQid_.set(a, qid);
 
     self.userByQid_.set(qid, a);
+    self.userByQidPresent_.set(qid, 1);
   }
 
   fun clearPending(a: Address) {
@@ -666,10 +667,11 @@ contract Presale with Deployable {
   }
 
   fun commitPending(qid: Int) {
+    if (!self.userByQidPresent_.exists(qid)) { return; }
+    let active = self.userByQidPresent_.get(qid)!!;
+    if (active == 0) { return; }
     if (!self.userByQid_.exists(qid)) { return; }
-    let aOpt = self.userByQid_.get(qid);
-    if (aOpt == null) { return; }
-    let a = aOpt!!;
+    let a = self.userByQid_.get(qid)!!;
 
     if (!self.isPending(a)) { return; }
     if (self.pendingQid(a) != qid) { return; }
@@ -679,15 +681,16 @@ contract Presale with Deployable {
     self.safeSubPendingTotal(amount);
     self.clearPending(a);
 
-    // FIX #2: cleanup mapping
-    self.userByQid_.set(qid, null);
+    // cleanup mapping presence (address value can remain stale but inactive)
+    self.userByQidPresent_.set(qid, 0);
   }
 
   fun restorePending(qid: Int) {
+    if (!self.userByQidPresent_.exists(qid)) { return; }
+    let active = self.userByQidPresent_.get(qid)!!;
+    if (active == 0) { return; }
     if (!self.userByQid_.exists(qid)) { return; }
-    let aOpt = self.userByQid_.get(qid);
-    if (aOpt == null) { return; }
-    let a = aOpt!!;
+    let a = self.userByQid_.get(qid)!!;
 
     if (!self.isPending(a)) { return; }
     if (self.pendingQid(a) != qid) { return; }
@@ -721,8 +724,8 @@ contract Presale with Deployable {
     self.safeSubPendingTotal(total);
     self.clearPending(a);
 
-    // FIX #2: cleanup mapping
-    self.userByQid_.set(qid, null);
+    // cleanup mapping presence (address value can remain stale but inactive)
+    self.userByQidPresent_.set(qid, 0);
   }
 
   // -----------------------------

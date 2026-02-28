@@ -9,6 +9,7 @@ import { stdin as input, stdout as output } from "node:process";
 // simplest/most compatible approach is to use extension-less imports.
 import { Presale } from "../build/Presale/Presale_Presale";
 import { CFG } from "./config";
+import { assertTestnet } from "./safety";
 import { loadEnv, upsertEnvKey } from "./env";
 
 function normalizeFriendlyAddr(s: string): string {
@@ -86,6 +87,7 @@ function parseAddressOrThrow(label: string, raw: string): Address {
 }
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "deploy");
   const envFile = loadEnv();
 
   const owner = provider.sender().address;
@@ -107,7 +109,7 @@ export async function run(provider: NetworkProvider) {
 
   if (envFile) {
     try {
-      upsertEnvKey("PRESALE", presale.address.toString(), envFile);
+      upsertEnvKey(envFile, "PRESALE", presale.address.toString());
       console.log("📝 Updated PRESALE in .env");
     } catch (e: any) {
       console.log("⚠️ Could not update PRESALE in .env:", e?.message ?? String(e));

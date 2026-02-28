@@ -4,8 +4,10 @@ import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
 import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
 import { CFG } from "./config";
+import { assertTestnet } from "./safety";
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "resolvePending");
   loadEnv();
 
   const presaleAddr =

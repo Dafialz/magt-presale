@@ -3,6 +3,7 @@ import { beginCell, toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { loadEnv, envMaybeAddress, envMaybeStr, parseJettonToNano } from "./env";
 import { CFG } from "./config";
+import { assertTestnet } from "./safety";
 
 /**
  * WITHDRAW JETTONS (owner only)
@@ -32,6 +33,7 @@ function buildWithdrawJettonsPayload(to: any, amountNanoJettons: bigint, queryId
 }
 
 export async function run(provider: NetworkProvider) {
+  assertTestnet(provider, "withdrawJettons");
   loadEnv();
 
   const presale =
