@@ -2,21 +2,23 @@
 import { beginCell, toNano, Address, Cell } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
 import { Presale } from "../build/Presale/Presale_Presale";
-import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
+import { loadEnv, envMaybeAddress, envMaybeStr, requireAddress } from "./env";
 import { CFG } from "./config";
 import { assertTestnet } from "./safety";
+import { patchTonConnectValidUntil } from "./tonconnect";
 
 /**
  * BUY script for Presale.tact
  *
  * Env:
  *   PRESALE_ADDRESS / PRESALE     – presale address (friendly)
- *   TON                           – amount in TON (default: 0.5)
+ *   AMOUNT_TON                    – amount in TON (decimal string)
+ *   AMOUNT_TON_NANO               – amount in nanoTON (integer string)
  *   REF                           – optional referral address (friendly)
  *
  * Modes:
- *   BUY_MODE=manual (default)     – sends manual opcode payload 0x42555901
- *   BUY_MODE=abi                 – sends typed BuyAbi message (opcode 0x42555902)
+ *   BUY_MODE=abi (default)         – sends typed BuyAbi message (opcode 0x42555902)
+ *   BUY_MODE=manual               – sends manual opcode payload 0x42555901
  */
 
 const OP_BUY_MANUAL = 0x42555901; // "BUY"+1
@@ -128,33 +130,68 @@ function buildManualBuyPayload(ref?: Address | null): Cell {
   return b.endCell();
 }
 
+
+function parseBuyAmountNano(): { amountNano: bigint; source: string } {
+  const tonRaw = (envMaybeStr("AMOUNT_TON") ?? "").trim();
+  const nanoRaw = (envMaybeStr("AMOUNT_TON_NANO") ?? "").trim();
+
+  if (nanoRaw) {
+    if (!/^\d+$/.test(nanoRaw)) {
+      throw new Error(`AMOUNT_TON_NANO must be an integer nanoTON string, got: ${nanoRaw}`);
+    }
+    const amountNano = BigInt(nanoRaw);
+    if (amountNano <= 0n) throw new Error(`AMOUNT_TON_NANO must be > 0, got: ${nanoRaw}`);
+    return { amountNano, source: `AMOUNT_TON_NANO=${nanoRaw}` };
+  }
+
+  if (tonRaw) {
+    const amountNano = toNano(tonRaw);
+    if (amountNano <= 0n) throw new Error(`AMOUNT_TON must be > 0, got: ${tonRaw}`);
+    return { amountNano, source: `AMOUNT_TON=${tonRaw}` };
+  }
+
+  throw new Error(
+    "Missing buy amount: set AMOUNT_TON (decimal) or AMOUNT_TON_NANO (integer). No default is applied."
+  );
+}
+
+function sanitizeTxForLog(tx: unknown): unknown {
+  try {
+    return JSON.parse(JSON.stringify(tx));
+  } catch {
+    return tx;
+  }
+}
 export async function run(provider: NetworkProvider) {
   assertTestnet(provider, "buy");
   loadEnv();
 
-  const presaleAddr =
+  const presaleAddr = requireAddress(
+    "PRESALE",
     envMaybeAddress("PRESALE_ADDRESS") ??
-    envMaybeAddress("PRESALE") ??
-    CFG.PRESALE;
+      envMaybeAddress("PRESALE") ??
+      CFG.PRESALE
+  );
 
   const presale = provider.open(Presale.fromAddress(presaleAddr));
 
   const connected = provider.sender().address;
   if (!connected) throw new Error("Provider sender address is not available");
 
-  const tonStr = (envMaybeStr("TON") ?? "0.5").trim();
-  const ton = toNano(tonStr);
-  if (ton <= 0n) throw new Error(`TON is invalid: ${tonStr}`);
+  const { amountNano, source } = parseBuyAmountNano();
 
-  const ref = envMaybeAddress("REF");
-  const mode = (envMaybeStr("BUY_MODE") ?? "manual").trim().toLowerCase();
+  const ref = envMaybeAddress("REF") ?? envMaybeAddress("REF_ADDRESS") ?? null;
+  const mode = (envMaybeStr("BUY_MODE") ?? "abi").trim().toLowerCase();
   const printInbound = boolOn("PRINT_INBOUND");
+
+  const patched = patchTonConnectValidUntil(provider);
 
   console.log("🏷️ Presale:", presaleAddr.toString());
   console.log("🔐 Connected wallet:", connected.toString());
-  console.log("💸 TON:", tonStr, "TON", `(nano: ${ton.toString()})`);
+  console.log("💸 Amount source:", source, `(nano: ${amountNano.toString()})`);
   console.log("🔗 REF:", ref ? ref.toString() : "(none)");
   console.log("🧩 BUY_MODE:", mode);
+  console.log("🧩 TonConnect valid_until patch:", patched ? "enabled" : "not needed");
   console.log("");
 
   if (printInbound) {
@@ -163,26 +200,61 @@ export async function run(provider: NetworkProvider) {
   }
 
   if (mode === "abi") {
+    const debugTx = {
+      valid_until: Math.floor(Date.now() / 1000) + 300,
+      messages: [
+        {
+          address: presaleAddr.toString(),
+          amount: amountNano.toString(),
+          payload: undefined,
+        },
+      ],
+      mode,
+    };
+
     console.log("Sending ABI BuyAbi transaction. Approve in your wallet...");
-    await presale.send(
-      provider.sender(),
-      { value: ton },
-      { $$type: "BuyAbi", ref: ref ?? null }
-    );
-    console.log("✅ BuyAbi sent.");
-    console.log("➡️ Next: npx blueprint run check --testnet");
-    return;
+    try {
+      await presale.send(
+        provider.sender(),
+        { value: amountNano },
+        { $$type: "BuyAbi", ref: ref ?? null }
+      );
+      console.log("✅ BuyAbi sent.");
+      console.log("➡️ Next: npx blueprint run check --testnet");
+      return;
+    } catch (e: any) {
+      console.error("❌ BuyAbi failed:", e?.message ?? String(e));
+      console.error("🧾 TonConnect tx json (sanitized):", JSON.stringify(sanitizeTxForLog(debugTx), null, 2));
+      throw e;
+    }
   }
 
   // default: manual
   const payload = buildManualBuyPayload(ref ?? null);
+  const debugTx = {
+    valid_until: Math.floor(Date.now() / 1000) + 300,
+    messages: [
+      {
+        address: presaleAddr.toString(),
+        amount: amountNano.toString(),
+        payload: bocBase64(payload),
+      },
+    ],
+    mode,
+  };
 
   console.log("Sending MANUAL buy transaction. Approve in your wallet...");
-  await provider.sender().send({
-    to: presaleAddr,
-    value: ton,
-    body: payload,
-  });
+  try {
+    await provider.sender().send({
+      to: presaleAddr,
+      value: amountNano,
+      body: payload,
+    });
+  } catch (e: any) {
+    console.error("❌ Manual buy failed:", e?.message ?? String(e));
+    console.error("🧾 TonConnect tx json (sanitized):", JSON.stringify(sanitizeTxForLog(debugTx), null, 2));
+    throw e;
+  }
 
   console.log("✅ Manual buy sent.");
   console.log("➡️ Next: npx blueprint run check --testnet");

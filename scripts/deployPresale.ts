@@ -27,5 +27,5 @@ export async function run(provider: NetworkProvider) {
   // eslint-disable-next-line no-console
   console.log("✅ Presale deployed at:", presale.address.toString());
   // eslint-disable-next-line no-console
-  console.log("ℹ️  Current ENV PRESALE (from config):", CFG.PRESALE.toString());
+  console.log("ℹ️  Current ENV PRESALE (from config):", CFG.PRESALE?.toString() ?? "(not set)");
 }

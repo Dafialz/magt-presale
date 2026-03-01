@@ -1,7 +1,7 @@
 // scripts/withdrawJettons.ts
 import { beginCell, toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
-import { loadEnv, envMaybeAddress, envMaybeStr, parseJettonToNano } from "./env";
+import { loadEnv, envMaybeAddress, envMaybeStr, parseJettonToNano, requireAddress } from "./env";
 import { CFG } from "./config";
 import { assertTestnet } from "./safety";
 
@@ -36,13 +36,14 @@ export async function run(provider: NetworkProvider) {
   assertTestnet(provider, "withdrawJettons");
   loadEnv();
 
-  const presale =
+  const presale = requireAddress(
+    "PRESALE",
     envMaybeAddress("PRESALE_ADDRESS") ??
-    envMaybeAddress("PRESALE") ??
-    CFG.PRESALE;
+      envMaybeAddress("PRESALE") ??
+      CFG.PRESALE
+  );
 
-  const owner = envMaybeAddress("OWNER") ?? CFG.OWNER;
-  if (!owner) throw new Error("OWNER is missing in .env (OWNER=EQ...)");
+  const owner = requireAddress("OWNER", envMaybeAddress("OWNER") ?? CFG.OWNER);
 
   const toAddr = envMaybeAddress("WITHDRAW_JETTON_TO") ?? owner;
 

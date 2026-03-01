@@ -1,7 +1,7 @@
 // scripts/withdraw.ts
 import { beginCell, toNano } from "@ton/core";
 import { NetworkProvider } from "@ton/blueprint";
-import { loadEnv, envMaybeAddress, envMaybeStr } from "./env";
+import { loadEnv, envMaybeAddress, envMaybeStr, requireAddress } from "./env";
 import { CFG } from "./config";
 import { assertTestnet } from "./safety";
 
@@ -28,13 +28,14 @@ export async function run(provider: NetworkProvider) {
   assertTestnet(provider, "withdraw");
   loadEnv();
 
-  const presale =
+  const presale = requireAddress(
+    "PRESALE",
     envMaybeAddress("PRESALE_ADDRESS") ??
-    envMaybeAddress("PRESALE") ??
-    CFG.PRESALE;
+      envMaybeAddress("PRESALE") ??
+      CFG.PRESALE
+  );
 
-  const owner = envMaybeAddress("OWNER") ?? CFG.OWNER;
-  if (!owner) throw new Error("OWNER is missing in .env (OWNER=EQ...)");
+  const owner = requireAddress("OWNER", envMaybeAddress("OWNER") ?? CFG.OWNER);
 
   const amountTonStr = (envMaybeStr("WITHDRAW_TON") ?? "").trim();
   if (!amountTonStr) throw new Error("WITHDRAW_TON is missing (example: WITHDRAW_TON=1)");

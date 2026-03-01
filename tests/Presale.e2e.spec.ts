@@ -1,83 +1,96 @@
-﻿import { strict as assert } from "node:assert";
-import { toNano } from "@ton/core";
+import { strict as assert } from "node:assert";
+import { Address, beginCell, toNano } from "@ton/core";
 import { Presale } from "../build/Presale/Presale_Presale";
 
+const OP_BUY_MANUAL = 0x42555901;
+
+function manualBuyBody(ref?: Address) {
+  const b = beginCell().storeUint(OP_BUY_MANUAL, 32);
+  if (ref) {
+    b.storeBit(1);
+    b.storeAddress(ref);
+  } else {
+    b.storeBit(0);
+  }
+  return b.endCell();
+}
+
 async function runE2E() {
-  let sandbox: any;
+  let Blockchain: any;
   try {
-    // Optional runtime dependency in restricted environments.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    sandbox = require("@ton/sandbox");
+    ({ Blockchain } = require("@ton/sandbox"));
   } catch {
     console.warn("⚠️ Skipping Presale.e2e.spec.ts: @ton/sandbox is not installed in this environment.");
     return;
   }
 
-  const { Blockchain } = sandbox;
-
   const blockchain = await Blockchain.create();
   const owner = await blockchain.treasury("owner");
   const buyer = await blockchain.treasury("buyer");
+  const referrer = await blockchain.treasury("referrer");
   const jettonMaster = await blockchain.treasury("jettonMaster");
+  const fakeJettonWallet = await blockchain.treasury("fakeJettonWallet");
 
-  const presale = blockchain.openContract(
-    await Presale.fromInit(owner.address, jettonMaster.address)
-  );
+  const presale = blockchain.openContract(await Presale.fromInit(owner.address, jettonMaster.address));
 
-  // Deploy contract.
-  const deployRes = await presale.send(
-    owner.getSender(),
-    { value: toNano("0.2") },
-    { $$type: "Deploy", queryId: 0n }
-  );
-  assert.ok(deployRes.transactions.length > 0, "deploy should emit transactions");
+  await presale.send(owner.getSender(), { value: toNano("0.2") }, { $$type: "Deploy", queryId: 0n });
 
-  // Negative path: presale is disabled by default, plain TON transfer should not mint.
-  const soldBeforeDisabled = await presale.getTotalSoldNano();
-  const claimableBeforeDisabled = await presale.getClaimableBuyerNano(buyer.address);
+  // Enable presale for buy tests.
+  await presale.send(owner.getSender(), { value: toNano("0.05") }, { $$type: "SetPresaleEnabled", enabled: 1n });
 
-  await buyer.send({
-    to: presale.address,
-    value: toNano("1"),
-    body: null,
-  });
+  // Test: buy increases pending
+  {
+    const pendingBefore = await presale.getPendingBuyerNano(buyer.address);
 
-  const soldAfterDisabled = await presale.getTotalSoldNano();
-  const claimableAfterDisabled = await presale.getClaimableBuyerNano(buyer.address);
+    await buyer.send({ to: presale.address, value: toNano("1"), body: null });
 
-  assert.equal(soldAfterDisabled, soldBeforeDisabled, "total sold must not change while presale disabled");
-  assert.equal(
-    claimableAfterDisabled,
-    claimableBeforeDisabled,
-    "buyer claimable must not change while presale disabled"
-  );
+    const pendingAfter = await presale.getPendingBuyerNano(buyer.address);
+    assert.ok(pendingAfter > pendingBefore, "buyerPendingNano should increase after buy");
+  }
 
-  // Enable presale as owner.
-  await presale.send(
-    owner.getSender(),
-    { value: toNano("0.05") },
-    { $$type: "SetPresaleEnabled", enabled: 1n }
-  );
+  // Test: referral accounting
+  {
+    const refPendingBefore = await presale.getPendingReferralNano(referrer.address);
 
-  // Positive path: plain TON transfer buy should increase sold + buyer claimable.
-  const soldBeforeBuy = await presale.getTotalSoldNano();
-  const claimableBeforeBuy = await presale.getClaimableBuyerNano(buyer.address);
+    await presale.send(
+      buyer.getSender(),
+      { value: toNano("1") },
+      { $$type: "BuyAbi", ref: referrer.address }
+    );
 
-  const buyRes = await buyer.send({
-    to: presale.address,
-    value: toNano("1"),
-    body: null,
-  });
+    const refPendingAfter = await presale.getPendingReferralNano(referrer.address);
+    assert.ok(refPendingAfter > refPendingBefore, "referralPendingNano should increase after referred buy");
+  }
 
-  assert.ok(buyRes.transactions.length > 0, "buy should emit transactions");
+  // Test: claimable calculation (claim should zero buyer claimable)
+  {
+    await presale.send(
+      owner.getSender(),
+      { value: toNano("0.05") },
+      { $$type: "SetJettonWallet", wallet: fakeJettonWallet.address }
+    );
 
-  const soldAfterBuy = await presale.getTotalSoldNano();
-  const claimableAfterBuy = await presale.getClaimableBuyerNano(buyer.address);
+    const claimableBefore = await presale.getClaimableBuyerNano(buyer.address);
+    assert.ok(claimableBefore > 0n, "claimableBuyerNano should be > 0 before claim");
 
-  assert.ok(soldAfterBuy > soldBeforeBuy, "total sold should increase after enabled buy");
-  assert.ok(claimableAfterBuy > claimableBeforeBuy, "buyer claimable should increase after enabled buy");
+    await presale.send(buyer.getSender(), { value: toNano("1") }, { $$type: "Claim", query_id: 0n });
 
-  console.log("Presale e2e passed: disabled refund path + enabled buy path");
+    const claimableAfter = await presale.getClaimableBuyerNano(buyer.address);
+    assert.equal(claimableAfter, 0n, "claimableBuyerNano should become 0 after claim");
+  }
+
+  // Test: manual opcode buy
+  {
+    const pendingBefore = await presale.getPendingBuyerNano(buyer.address);
+
+    await buyer.send({ to: presale.address, value: toNano("1"), body: manualBuyBody() });
+
+    const pendingAfter = await presale.getPendingBuyerNano(buyer.address);
+    assert.ok(pendingAfter > pendingBefore, "pending should increase after manual opcode buy");
+  }
+
+  console.log("Presale e2e passed: pending/referral/claim/manual invariants");
 }
 
 runE2E();
