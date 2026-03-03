@@ -10,6 +10,16 @@
         "external": false
       },
       "mode": "full"
+    },
+    {
+      "name": "MockJettonWallet",
+      "path": "contracts/MockJettonWallet.tact",
+      "output": "build/MockJettonWallet",
+      "options": {
+        "debug": false,
+        "external": false
+      },
+      "mode": "full"
     }
   ]
 }

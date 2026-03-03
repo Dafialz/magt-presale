@@ -7,15 +7,16 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npm run build && tsc --noEmit && ts-node tests/Presale.spec.ts && ts-node tests/Presale.e2e.spec.ts",
-    "build": "blueprint build Presale",
+    "test": "npm run test:all",
+    "build": "blueprint build Presale && blueprint build MockJettonWallet",
+    "typecheck": "tsc --noEmit",
     "ci": "npm run test:all && npm run lint --if-present",
     "deploy:testnet": "blueprint run deploy --testnet",
     "deploy:mainnet": "blueprint run deploy",
     "check": "blueprint run check --testnet",
-    "test:unit": "npm run build && tsc --noEmit && ts-node tests/Presale.spec.ts",
-    "test:e2e": "npm run build && ts-node tests/Presale.e2e.spec.ts",
-    "test:all": "npm run test:unit && npm run test:e2e",
+    "test:unit": "npm run build && npm run typecheck && ts-node tests/Presale.spec.ts",
+    "test:e2e": "npm run build && ts-node tests/Presale.sandbox.e2e.spec.ts",
+    "test:all": "npm run typecheck && npm run test:e2e",
     "test:testnet": "powershell -ExecutionPolicy Bypass -File .\\runbook-buy-testnet.ps1"
   },
   "keywords": [],
@@ -28,6 +29,7 @@
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
+    "@ton/sandbox": "^0.41.0",
     "@types/node": "^25.0.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
