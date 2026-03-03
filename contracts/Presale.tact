@@ -231,8 +231,7 @@ contract Presale with Deployable {
   receive(msg: Withdraw) {
     require(sender() == self.owner_, "NOT_OWNER");
     require(msg.amount > 0, "BAD_AMOUNT");
-    let reserved = self.totalClaimableNano_ + self.totalPendingNano_
-                 + self.WITHDRAW_MIN_KEEP_TON + self.WITHDRAW_GAS_BUFFER;
+    let reserved = self.WITHDRAW_MIN_KEEP_TON + self.WITHDRAW_GAS_BUFFER;
     require(myBalance() - msg.amount >= reserved, "KEEP_MIN_BALANCE");
 
     send(SendParameters{
