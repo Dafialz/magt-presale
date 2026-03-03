@@ -344,14 +344,12 @@ contract Presale with Deployable {
     }
   }
 
-  // Refund almost all attached value and keep a small dust buffer to avoid action-phase underfunding.
+  // IMPORTANT: refund must NOT use SendPayGasSeparately
   fun refundAll(to: Address, amount: Int) {
     if (amount <= 0) { return; }
-    let refund = amount - self.MIN_REFUND_NANO;
-    if (refund <= 0) { return; }
     send(SendParameters{
       to: to,
-      value: refund,
+      value: amount,
       bounce: false,
       body: emptyCell()
     });
